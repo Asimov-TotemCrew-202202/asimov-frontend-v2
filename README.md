@@ -1,24 +1,19 @@
-# asimov-23
+# Frontend Asimov 🎓
 
-## Project setup
-```
-npm install
-```
+## Description
+This repository contains the frontend for the asimov project
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Team TotemCrew 👨‍💻
+* Heber Cordova Jimenez - U201924464
+* Yordy Rolando Mochcco Atauje - U201923959
+* Julio Alexander Salazar Zapata - U202017572
+* Alejandro Quiros Medrano Jacobo - U201924161
+* Jose Rodrigo Lopez Flores - U201910421
+* Oscar Daniel De la Cruz Jara - U201920156
+* Ronald Sebastian Delgado del Castillo - U201810250
+* Adrian Esqueiros Cabrera - U201718169
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Documentation
+* version 1.0.0 22/05/2023
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [Frontend deployed](https://asimov-agile-202202.web.app/).
