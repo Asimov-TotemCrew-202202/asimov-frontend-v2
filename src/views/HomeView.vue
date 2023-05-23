@@ -3,8 +3,9 @@
     <v-card color="#eeeeee" elevation="0">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">mdi-view-dashboard</v-icon> <h2>Dashboard</h2>
+        
       </div>
-      
+
       <standar-layaout>
         <template #rightColumn>
           <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-bullhorn-variant</v-icon> <h2 class="py-3">Comunicados</h2></div>

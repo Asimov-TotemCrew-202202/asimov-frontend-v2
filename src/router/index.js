@@ -26,7 +26,15 @@ const routes = [
     component: () => import('../views/CoursesView.vue'),
     meta: {
       layout: () => import('../layouts/DefaultLayaout.vue')
-    }
+    },
+  },
+  {
+    path: '/courses/:id',
+    name: 'courses-detail',
+    component: () => import('../views/CoursesDetail.vue'),
+    meta: {
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    },
   },
 ]
 

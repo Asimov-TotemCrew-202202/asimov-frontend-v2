@@ -6,11 +6,11 @@
           <v-card  dark class="pa-5 rounded-lg" color="#051252" elevation="0">
             <v-card-title class="font-weight-black"> <v-icon class="mr-2">mdi-school</v-icon>ASIMOV</v-card-title>
             <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-2">
-              <div class="font-weight-bold">INSTITUCION</div>
+              <div class="font-weight-bold">INSTITUCION:</div>
               <div class="font-weight-regular">LOS ROSALES</div>
             </div>
             <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-4">
-              <div class="font-weight-bold">USER</div>
+              <div class="font-weight-bold">USUARIO:</div>
               <v-spacer></v-spacer>
               <div class="font-weight-regular">DOCENTE</div>
             </div>
