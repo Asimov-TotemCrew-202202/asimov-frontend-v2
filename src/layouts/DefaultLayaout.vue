@@ -25,7 +25,7 @@
             <v-list flat style="padding: 0 !important;">
               <v-list-item-group
                 v-model="model"
-                color="#081d87"
+                :color="modelSize? 'red' : '#081d87'"
               >
                 <v-list-item
                   v-for="(item, i) in items"
@@ -58,7 +58,10 @@
 
     </div>
     <div class="centerColumn" style="width: 100% !important; height: 100%;">
-      <slot name="default"></slot>
+      <transition name="fade" mode="out-in">
+        <slot name="default"></slot>
+          <!-- <router-view/> -->
+      </transition>
     </div>  
   </div>
 </template>
@@ -98,10 +101,16 @@
         },
       ],
       model: 0,
+      modelSize: null,
     }),
     computed:{
     },
     mounted() {
+      let passive = { passive: true };
+      this.onResize();
+      window.addEventListener("resize", this.onResize, passive);
+
+
       let param = window.location.pathname;
       param = param.split("/")[1]
 
@@ -115,6 +124,12 @@
       
     },
     methods:{
+      onResize() {
+        let { clientWidth } = document.documentElement;
+        let is = true;
+        if (clientWidth > 1080) { is = false;} //si el ancho de pantalla esmayor a 600px, no es mobile
+        this.modelSize = is;
+      },
       pushName(name){
         // let param = window.location.pathname;
         // param = param.split("/")[1]
@@ -138,7 +153,9 @@
   padding: 30px;
   display: grid;
   gap: 10px;
+
   grid-template-columns: 20% 80%;
+  
   grid-template-rows: 100%;
   .leftColumn,
   .centerColumn{
@@ -148,8 +165,10 @@
 
   .leftColumn__buttons {
     position: fixed;
+
     width: 20%;
     padding-right: 10px;
+
     display: flex;
     flex-direction: column;
     height: calc(100vh - 60px);

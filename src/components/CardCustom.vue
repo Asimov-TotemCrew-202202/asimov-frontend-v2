@@ -2,9 +2,9 @@
   <v-card elevation="0" outlined class="card-course rounded-lg" @mouseover="showIcon" @mouseleave="hideIcon">
     <v-card-title class="font-weight-bold">TRIGONOMETRIA - {{text}} <v-spacer></v-spacer>
       <div v-if="showHoverIcon">
-        <v-btn @click="viewDetalle" small dense color="#091120" dark elevation="0" class="mr-2"><v-icon class="mr-1" small>mdi-eye</v-icon>INFO</v-btn>
-        <v-btn small dense color="red" dark elevation="0" class="mr-2"><v-icon class="mr-1" small>mdi-delete</v-icon>ELIMINAR</v-btn>
-        <v-btn small dense color="#081d87" dark elevation="0"><v-icon class="mr-1" small>mdi-pencil</v-icon>EDITAR</v-btn>
+        <v-btn fab @click="viewDetalle" small dense color="#091120" dark elevation="0" class="mr-2"><v-icon class="mr-0" small>mdi-eye</v-icon></v-btn>
+        <v-btn fab small dense color="red" dark elevation="0" class="mr-2"><v-icon class="mr-0" small>mdi-delete</v-icon></v-btn>
+        <v-btn fab small dense color="#081d87" dark elevation="0"><v-icon class="mr-0" small>mdi-pencil</v-icon></v-btn>
       </div> 
     </v-card-title>
     <v-card-text class="text-justify pb-0"> <span class="font-weight-bold">Descripcion:</span>  Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam reiciendis labore.</v-card-text>

@@ -38,9 +38,6 @@
           Regitrar Curso
         </v-card-title>
 
-        
-
-
         <v-form class="pa-6">
           <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
           <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
