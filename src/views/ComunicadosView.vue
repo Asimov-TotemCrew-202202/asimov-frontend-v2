@@ -3,7 +3,7 @@
       <template #form>
           <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
           <v-text-field class="mb-3" dense label="Descripcion" hide-details outlined></v-text-field>
-          <v-select v-model="selectedCompetencias" :items="competencias" item-text="nombre" item-value="id" chips label="Competencias" multiple></v-select>
+          <v-select outlined dense v-model="selectedCompetencias" :items="competencias" item-text="nombre" item-value="id" chips label="Competencias" multiple></v-select>
       </template>
     </crud-custom>
 </template>
