@@ -48,7 +48,7 @@
           <v-btn
             color="#081d87"
             text
-            @click="dialog = false"
+            @click="create()"
           >
             CREATE
           </v-btn>
@@ -96,6 +96,10 @@ import CardCustom from '@/components/CardCustom.vue'
         type: Array,
         default: () => [{ text: "Descripción", value: "description" },]
       },
+      create: {
+        type: Function,
+        required: true,
+      }
     },
 
     data: () => ({
