@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${sample?'':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item.name + '-'+ item.origin.name}`" :headers="headers" @detalle="logDetalle(index)"/>
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item.name}`" :headers="headers" @detalle="logDetalle(index)"/>
       </div>
     </v-card>
 
