@@ -39,7 +39,7 @@ const routes = [
   {
     path: '/comunicados',
     name: 'comunicados',
-    component: () => import('../views/Comunicados.vue'),
+    component: () => import('../views/ComunicadosView.vue'),
     meta: {
       layout: () => import('../layouts/DefaultLayaout.vue')
     },
