@@ -6,13 +6,12 @@
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">mdi-flag-checkered</v-icon> <h2>TRIGONOMETRIA</h2>
         <v-spacer></v-spacer>
+
         <div>
-          <!-- <v-btn dark color="white" class="mr-3" outlined elevation="0" @click="dialog=true">
-            <v-icon>mdi-plus</v-icon> AÑADIR CURSO
+          
+          <v-btn dark color="white" @click="backPage" outlined elevation="0">
+            <v-icon class="mr-2">mdi-arrow-left</v-icon>REGRESAR
           </v-btn>
-          <v-btn dark color="white" class="" outlined elevation="0">
-            <v-icon>mdi-sync</v-icon> RECARGAR
-          </v-btn> -->
 
         </div>
       </div>
@@ -229,6 +228,11 @@ import ChipCustom from '@/components/ChipCustom.vue'
     methods:{
       logDetalle(item){
         console.log('LOG ITEM--->',item);
+      },
+      backPage(){
+        this.$router.push({
+          name: "courses",
+        });
       },
       activeOverlay(){
         this.overlay = true;

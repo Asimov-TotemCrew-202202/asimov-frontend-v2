@@ -36,6 +36,14 @@ const routes = [
       layout: () => import('../layouts/DefaultLayaout.vue')
     },
   },
+  {
+    path: '/comunicados',
+    name: 'comunicados',
+    component: () => import('../views/Comunicados.vue'),
+    meta: {
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    },
+  },
 ]
 
 const router = new VueRouter({

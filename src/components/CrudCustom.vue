@@ -1,14 +1,14 @@
 <template>
   <div style="display: grid; grid-template-columns: 80% 20%; grid-template-rows: 1fr; gap: 10px;">
 
-  <div class="d-flex justify-center">
+  <div style="width: 100%;">
     <v-card color="#eeeeee" elevation="0">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
-        <v-icon size="30" color="#ffffff" class="mr-3">mdi-folder</v-icon> <h2>Courses</h2>
+        <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
         <div>
-          <v-btn dark color="white" class="mr-3" outlined elevation="0" @click="dialog=true">
-            <v-icon>mdi-plus</v-icon> AÑADIR CURSO
+          <v-btn dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="dialog=true">
+            <v-icon>mdi-plus</v-icon> AÑADIR 
           </v-btn>
           <v-btn dark color="white" class="" outlined elevation="0">
             <v-icon>mdi-sync</v-icon> RECARGAR
@@ -16,15 +16,8 @@
 
         </div>
       </div>
-      <div class="displayCourses">
-        <card-custom v-for="(item, index) in 7" :key="index" :text="`${index}`" @detalle="logDetalle(index)">
-          <template #bottom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-          </template>
-        </card-custom>
+      <div class="displayCourses" :style="`grid-template-columns: 1fr ${sample?'':''};`">
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item.name + '-'+ item.origin.name}`" :headers="headers" @detalle="logDetalle(index)"/>
       </div>
     </v-card>
 
@@ -35,14 +28,11 @@
     >
       <v-card>
         <v-card-title class="" style="color: white; background-color: #081d87;">
-          Regitrar Curso
+          Regitrar {{nameCrud}}
         </v-card-title>
 
         <v-form class="pa-6">
-          <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
-          <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
-          <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
-          <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
+          <slot name="form"></slot>
         </v-form>
         <v-divider></v-divider>
 
@@ -69,45 +59,49 @@
     
   </div>
   <div style="width: 100%; border-radius: 8px;">
-    <v-card class="pa-5 rounded-b-0" elevation="0">
-      <h3>Caracteristicas</h3>
-    </v-card>
-    <v-expansion-panels class="mt-n3" accordion v-model="accordion">
-      <v-expansion-panel
-        v-for="(item,i) in niveles"
-        :key="i"
-      >
-        <v-expansion-panel-header>{{item.title}}</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-btn text v-for="(grade, index) in item.number" :key="index">{{index+1}}º Año {{item.title}}</v-btn>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
+    <slot name="rightColumn"></slot>
+    
     </div>
-
   </div>
 </template>
-
+A
 <script>
-import ChipCustom from '@/components/ChipCustom.vue'
 import CardCustom from '@/components/CardCustom.vue'
 
   export default {
-    name: 'CoursesView',
+    name: 'CrudCustomView',
 
     components:{
-      ChipCustom,
       CardCustom,
     },
 
+    props:{
+      endPoint: {
+        type: String,
+        default: 'courses'
+      },
+      icon: {
+        type: String,
+        default: 'mdi-folder'
+      },
+      titleCrud: {
+        type: String,
+        default: 'Courses'
+      },
+      nameCrud: {
+        type: String,
+        default: 'Course'
+      },
+      headers: {
+        type: Array,
+        default: () => [{ text: "Descripción", value: "description" },]
+      },
+    },
+
     data: () => ({
+      data: null,
       dialog: false,
       accordion: 0,
-      items: [
-        { title: 'Click Me1' },
-        { title: 'Click Me2' },
-        { title: 'Click Me3' },
-      ],
       niveles: [
         { 
           title: 'Primaria',
@@ -125,7 +119,20 @@ import CardCustom from '@/components/CardCustom.vue'
         name: "courses-detail",
         params: { id },
       });
+      },
+      getData() {
+        this.$axios.get(this.endPoint)
+          .then(response => {
+            this.data = response.data;
+            console.log('DATA ----> ', this.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
+    },
+    mounted(){
+      this.getData();
     }
 
   }
@@ -136,11 +143,10 @@ $medium: 1500px;
 
 .displayCourses{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  
   gap: 10px;
   @media screen and (max-width: $medium) {
     grid-template-columns: 1fr !important;
-    
   }
 }
 .card-course{

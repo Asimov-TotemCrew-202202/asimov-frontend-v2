@@ -87,7 +87,7 @@
         {
           icon: 'mdi-bullhorn-variant',
           text: 'Comunicados',
-          route: 'sample',
+          route: 'comunicados',
         },
         {
           icon: 'mdi-account-group',

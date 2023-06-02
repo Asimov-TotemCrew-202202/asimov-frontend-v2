@@ -1,7 +1,7 @@
 <template>
   <div style="display: grid; grid-template-columns: 80% 20%; grid-template-rows: 1fr; gap: 10px;">
 
-  <div class="d-flex justify-center">
+  <div class="" style="width: 100%;">
     <v-card color="#eeeeee" elevation="0">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">mdi-folder</v-icon> <h2>Courses</h2>
@@ -17,14 +17,7 @@
         </div>
       </div>
       <div class="displayCourses">
-        <card-custom v-for="(item, index) in 7" :key="index" :text="`${index}`" @detalle="logDetalle(index)">
-          <template #bottom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-            <chip-custom class="mr-2 mt-2" text="Sample"></chip-custom>
-          </template>
-        </card-custom>
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item.name + '-'+ item.origin.name}`" @detalle="logDetalle(index)"/>
       </div>
     </v-card>
 
@@ -92,18 +85,17 @@
 </template>
 
 <script>
-import ChipCustom from '@/components/ChipCustom.vue'
 import CardCustom from '@/components/CardCustom.vue'
 
   export default {
     name: 'CoursesView',
 
     components:{
-      ChipCustom,
       CardCustom,
     },
 
     data: () => ({
+      data: null,
       dialog: false,
       accordion: 0,
       items: [
@@ -125,10 +117,23 @@ import CardCustom from '@/components/CardCustom.vue'
     methods:{
       logDetalle(id){
         this.$router.push({
-        name: "courses-detail",
-        params: { id },
-      });
+          name: "courses-detail",
+          params: { id },
+        });
+      },
+      getData() {
+        this.$axios.get('character')
+          .then(response => {
+            this.data = response.data.results;
+            console.log('DATA ----> ', this.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
+    },
+    mounted(){
+      this.getData();
     }
 
   }
@@ -141,6 +146,7 @@ $medium: 1500px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  width: 100%;
   @media screen and (max-width: $medium) {
     grid-template-columns: 1fr !important;
     
@@ -148,6 +154,8 @@ $medium: 1500px;
 }
 .card-course{
   transition: transform 0.3s ease;
+  width: 100% !important;
+
 
 }
 .card-course:hover{
