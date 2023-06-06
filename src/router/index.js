@@ -13,6 +13,14 @@ const routes = [
     }
   },
   {
+    path: '/signup',
+    name: 'signup',
+    component: () => import('../views/SignupView.vue'),
+    meta: {
+      layout: () => import('../layouts/AuthLayaout.vue')
+    }
+  },
+  {
     path: '/home',
     name: 'home',
     component: () => import('../views/HomeView.vue'),
