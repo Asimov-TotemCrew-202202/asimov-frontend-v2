@@ -3,15 +3,31 @@
     <v-hover v-slot="{ hover }">
       <v-card :elevation="hover?12:0" class="transition-swing pa-7"  outlined>
         <v-card-title class="justify-center font-weight-bold pt-0">
-          LOG IN
+          SIGN UP
         </v-card-title>
         <v-card-text class="pb-0 px-2">
               <v-form ref="form" lazy-validation>
                 <v-text-field class="my-3"
                     dense
                     hide-details="auto"
+                    label="Nombre y Apellidos"
+                    placeholder="Luis Rodriguez"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-card-account-details-outline</v-icon>
+                      </template>
+                      Nombre completo
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    hide-details="auto"
                     label="E-mail"
-                    placeholder="example@mail.com"
+                    placeholder="ejemplo@mail.com"
                     required outlined
                 >
                   <template v-slot:append>
@@ -20,6 +36,39 @@
                         <v-icon v-on="on">mdi-email-outline</v-icon>
                       </template>
                       Email
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    type="number"
+                    hide-details="auto"
+                    label="Edad"
+                    placeholder="99"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-counter</v-icon>
+                      </template>
+                      Edad
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    hide-details="auto"
+                    label="Institución Educativa"
+                    placeholder="Colegio I.E."
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-town-hall</v-icon>
+                      </template>
+                      Colegio
                     </v-tooltip>
                   </template>
                 </v-text-field>
@@ -45,11 +94,11 @@
         <v-card-actions>
           <v-row>
             <v-col cols="12" class="pb-0">
-              <v-btn block color="#0b2ac4" dark elevation="0" @click="pushToHome" class="mb-2">
-                LOG IN
+              <v-btn block color="#0b2ac4" dark elevation="0"  class="mb-2">
+                REGISTRAR
               </v-btn>
-              <v-btn block text @click="pushToSign">
-                SIGN UP
+              <v-btn block text @click="pushToHome">
+                REGRESAR
               </v-btn>
 
             </v-col>
@@ -73,11 +122,8 @@
     },
     methods:{
       pushToHome() {
-        router.push('/home');
-      },
-      pushToSign() {
-        router.push('/signup');
-      },
+        router.push('/');
+      }
     }
   }
 </script>

@@ -257,7 +257,7 @@ $medium: 1500px;
 }
 .card-course:hover{
 
-  z-index: 500;
+   z-index: 10;
   transform: scale(1.1);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
 }

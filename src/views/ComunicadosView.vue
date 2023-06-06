@@ -1,15 +1,22 @@
 <template>
-    <crud-custom title-crud="Comunicados" end-point="courses" name-crud="Comunicado" icon="mdi-bullhorn-variant" :create="createCourse">
+    <crud-custom title-crud="Comunicados" end-point="courses" name-crud="Comunicado" icon="mdi-bullhorn-variant" :entity-property="entityProperty"  :headers="header" one-column>
       <template #form>
-          <v-text-field class="mb-3" dense label="Nombre" hide-details outlined></v-text-field>
-          <v-text-field class="mb-3" dense label="Descripcion" hide-details outlined></v-text-field>
-          <v-select outlined dense v-model="selectedCompetencias" :items="competencias" item-text="nombre" item-value="id" chips label="Competencias" multiple></v-select>
+          <v-text-field dense label="Nombre" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
+          <v-text-field dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description"></v-text-field>
+          <v-select dense outlined v-model="entityProperty.competenceIds" hide-details :items="competencias" item-text="nombre" item-value="id" :menu-props="{ top: true, offsetY: true }" label="Competencias" multiple></v-select>
+      </template>
+      <template #bottomCard>
+        <v-card-text class="text-uppercase pt-0 font-weight-bold">Competencias:</v-card-text>
+        <div class="pb-4 pl-4">
+          <chip-custom v-for="item in competencias" :key="item.id" class="mr-2">{{item.nombre}}</chip-custom>
+        </div>
       </template>
     </crud-custom>
 </template>
 
 <script>
 import CrudCustom from '@/components/CrudCustom.vue'
+import ChipCustom from '@/components/ChipCustom.vue'
 
 
 export default {
@@ -17,13 +24,7 @@ export default {
 
   components:{
     CrudCustom,
-  },
-
-  props:{
-    Title: {
-      type: String,
-      default: 'Comunicados Title'
-    },
+    ChipCustom,
   },
 
   data: () => ({
@@ -31,6 +32,11 @@ export default {
     header: [
       { text: "Descripción", value: "description" },
     ],
+    entityProperty:{
+      name: '',
+      description: '',
+      competenceIds: []
+    },
     competencias: [
       { id: 1, nombre: 'Razonamiento' },
       { id: 2, nombre: 'Análisis' },
@@ -55,27 +61,6 @@ export default {
     logComunicados() {
       console.log('SAMPLE LOG --->', this.Title);
     },
-    createCourse() {
-      const data = {
-        nombre: this.nombre,
-        descripcion: this.descripcion,
-        competencias: this.getSelectedCompetencias()
-      }
-      this.$axios.post(this.apiRoute, data)
-          .then(response => {
-            console.log(response.data)
-          })
-          .catch(error => {
-            console.log(error)
-          })
-    },
-    getSelectedCompetencias() {
-      const selectedIds = []
-      this.selectedCompetencias.forEach(competencia => {
-        selectedIds.push(competencia.id)
-      })
-      return selectedIds
-    }
   },
 
 //  mounted(){
