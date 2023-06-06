@@ -46,7 +46,7 @@
         <v-card-actions>
           <v-row>
             <v-col cols="12">
-              <v-btn block color="indigo" dark elevation="0" @click="pushToHome" class="mb-2">
+              <v-btn block color="#0b2ac4" dark elevation="0" @click="pushToHome" class="mb-2">
                 LOG IN
               </v-btn>
               <v-btn block text @click="pushToHome">
