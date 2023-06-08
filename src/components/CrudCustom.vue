@@ -2,7 +2,7 @@
   <div style="display: grid; grid-template-columns: 80% 20%; grid-template-rows: 1fr; gap: 10px;">
 
   <div style="width: 100%;">
-    <v-card color="#eeeeee" elevation="0">
+    <v-card color="#eeeeee" elevation="0" outlined>
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
@@ -60,7 +60,9 @@
   </div>
   <div style="width: 100%; border-radius: 8px;">
     <slot name="rightColumn"></slot>
-    
+      <v-card class="pa-5 d-flex justify-center align-center">
+          <img class="user-img" src="../assets/user-defauld.svg" alt="User Profile Logo">
+      </v-card>
     </div>
   </div>
 </template>

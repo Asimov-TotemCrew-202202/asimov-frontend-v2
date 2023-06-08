@@ -97,7 +97,7 @@
         {
           icon: 'mdi-account',
           text: 'Profile',
-          route: 'sample',
+          route: 'profile',
         },
       ],
       model: 0,
