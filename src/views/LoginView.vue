@@ -7,9 +7,12 @@
           ASIMOV
         </v-card-title>
         <v-card-text class="pb-0 px-2">
-              <v-form ref="form" lazy-validation>
+              <p v-if="showError" style="color: red;">Password y/o contraseña incorrecta</p>
+              <v-form ref="form" validate-on="submit lazy" @submit.prevent="login">
                 <v-text-field class="my-3"
                     dense
+                    :rules="emailRules"
+                    v-model="user.email"
                     hide-details="auto"
                     label="E-mail"
                     placeholder="example@mail.com"
@@ -26,7 +29,9 @@
                 </v-text-field>
                 <v-text-field class="mt-3 mb-4"
                     dense
-                    hide-details="auto"
+                    
+                    :rules="passwordRules"
+                    v-model="user.password"
                     label="Password"
                     placeholder="*******"
                     type="password"
@@ -41,41 +46,96 @@
                     </v-tooltip>
                   </template>
                 </v-text-field>
-              </v-form>
-            </v-card-text>
-        <v-card-actions>
+                <v-card-actions>
           <v-row>
             <v-col cols="12">
-              <v-btn block color="#0b2ac4" dark elevation="0" @click="pushToHome" class="mb-2">
+              <v-btn block color="#0b2ac4" dark elevation="0" type="submit" class="mb-2">
                 LOG IN
               </v-btn>
-              <v-btn block text @click="pushToHome">
+              <v-btn block text @click="register">
                 SIGN UP
               </v-btn>
 
             </v-col>
           </v-row>
         </v-card-actions>
+              </v-form>
+            </v-card-text>
       </v-card>
     </v-hover>
   <!-- </div> -->
 </template>
 
 <script>
+import User from '@/models/user';
+
   // import HelloWorld from '../components/HelloWorld'
-  import router from "@/router";
+  // import router from "@/router";
 
 
   export default {
     name: 'LoginView',
 
+    data() {
+    return {
+      user: new User('', ''),
+      showError: false,
+      passwordRules: [
+        value => {
+          if (value) return true
+
+          return 'Password is required.'
+        }
+      ],
+      emailRules: [
+        value => {
+          if (value) return true
+
+          return 'E-mail is required.'
+        },
+        value => {
+          if (/.+@.+\..+/.test(value)) return true
+
+          return 'E-mail must be valid.'
+        },
+      ],
+    };
+  },
+
     components: {
       // HelloWorld,
     },
+
     methods:{
-      pushToHome() {
-        router.push('/home');
-      }
+      async login() {
+
+        const { valid } = await this.$refs.form.validate();
+        
+        if (!valid) {
+          if (this.user.email && this.user.password) {
+          this.$store.dispatch('auth/login', this.user).then(
+            () => {
+              this.$router.push('/home');
+            },
+            error => {
+              this.showError = true;
+              console.log(error.response.status);
+            }
+          );
+        }
+        }
+      },
+      register() {
+
+      },
+    },
+
+    mounted(){
+      const user = this.$store.state.auth.user;
+
+      console.log(user);
+
+      if (user) this.$router.push('/home');
     }
   }
 </script>

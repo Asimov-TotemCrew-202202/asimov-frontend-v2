@@ -49,7 +49,7 @@
 
 
         
-        <v-card class="pa-4 d-flex align-center font-weight-bold" outlined @click="()=>{}" color="" elevation="0">
+        <v-card class="pa-4 d-flex align-center font-weight-bold" outlined @click="logout" color="" elevation="0">
           <div><v-icon >mdi-logout-variant</v-icon></div>
           <div class="pt-1 pl-5">Cerrar Sesión</div>
         </v-card>
@@ -141,7 +141,10 @@
         if (index == this.model) return ;
       
         router.push(`/${name.route}`);
-
+      },
+      logout() {
+        this.$store.dispatch('auth/logout');
+        this.$router.push('/');
       }
     }
 
