@@ -75,7 +75,6 @@
   </div>
   <div style="width: 100%; border-radius: 8px;">
     <slot name="rightColumn"></slot>
-    
     </div>
   </div>
 </template>

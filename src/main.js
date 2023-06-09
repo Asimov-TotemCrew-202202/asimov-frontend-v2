@@ -5,6 +5,15 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import axios from 'axios';
 
+Vue.prototype.$axiosAuth = axios.create({
+  baseURL:  "http://localhost:8085/api/auth",
+  timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json"
+  }
+});
+
 Vue.prototype.$axios = axios.create({
   baseURL:  "http://localhost:8080/api/v1/",
   timeout: 30000,
