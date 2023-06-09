@@ -14,6 +14,14 @@ Vue.prototype.$axios = axios.create({
   }
 });
 
+Vue.prototype.$axiosGPT = axios.create({
+  baseURL:  "https://api.openai.com/v1",
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer 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'
+  }
+});
+
 Vue.config.productionTip = false
 
 new Vue({

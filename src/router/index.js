@@ -52,6 +52,22 @@ const routes = [
       layout: () => import('../layouts/DefaultLayaout.vue')
     },
   },
+  {
+    path: '/competencias',
+    name: 'competencias',
+    component: () => import('../views/CompetenciasView.vue'),
+    meta: {
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    },
+  },
+  {
+    path: '/profesores',
+    name: 'profesores',
+    component: () => import('../views/TeachersView.vue'),
+    meta: {
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    },
+  },
 ]
 
 const router = new VueRouter({

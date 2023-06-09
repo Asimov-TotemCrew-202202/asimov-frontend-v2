@@ -4,7 +4,7 @@
   <div class="d-flex justify-center">
     <v-card color="#eeeeee" elevation="0" style="width: 100%;">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
-        <v-icon size="30" color="#ffffff" class="mr-3">mdi-flag-checkered</v-icon> <h2>TRIGONOMETRIA</h2>
+        <v-icon size="30" color="#ffffff" class="mr-3">mdi-flag-checkered</v-icon> <h2>{{entityProp.name}}</h2>
         <v-spacer></v-spacer>
 
         <div>
@@ -17,26 +17,27 @@
       </div>
       <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-text-box</v-icon> <h2 class="py-3">Descripción</h2></div>
       <v-card class="pa-5" elevation="0" outlined>
-        <p class="ma-0 text-justify">Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum architecto quisquam officia adipisci? Repellendus odit veritatis perspiciatis placeat sit nobis quaerat, at exercitationem! Doloremque obcaecati ex corporis voluptatum nesciunt nisi. Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum architecto quisquam officia adipisci? Repellendus odit veritatis perspiciatis placeat sit nobis quaerat, at exercitationem! Doloremque obcaecati ex corporis voluptatum nesciunt nisi.</p>
+        <p class="ma-0 text-justify">{{entityProp.description}}</p>
 
       </v-card>
-      <div class="d-flex pl-3 mt-5"><v-icon size="30" color="#081d87" class="mr-3">mdi-tooltip-check</v-icon> <h2 class="py-3">Temas</h2></div>
+      <div class="d-flex pl-3 mt-5 align-center"><v-icon size="30" color="#081d87" class="mr-3">mdi-tooltip-check</v-icon> <h2 class="py-3">Temas</h2> <v-spacer></v-spacer>
+        <v-btn color="#081d87" class="mr-4" outlined @click="openAdd"> <v-icon class="mr-2">mdi-plus</v-icon>AÑADIR</v-btn></div>
       <v-expansion-panels class="elevation-0">
       <v-expansion-panel
       class="elevation-0"
-        v-for="(item,i) in 10"
+        v-for="(item,i) in topics"
         :key="i"
       >
-        <v-expansion-panel-header class="font-weight-bold">TEMA - WEEK {{ (i+1).toString().padStart(2, '0') }}</v-expansion-panel-header>
+        <v-expansion-panel-header class="font-weight-bold text-uppercase">SEMANA {{ (i+1).toString().padStart(2, '0') }} - TEMA {{ item.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
           <p class="text-justify">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            {{ item.description }}
           </p>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn elevation="0" class="mr-3"> <v-icon class="mr-3">mdi-eye</v-icon>INFO</v-btn>
+            <v-btn elevation="0" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon>INFO</v-btn>
             <v-btn elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
-            <div elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>EVALUACIÓN IA</div>
+            <div elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>EVALUACIÓN IA</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -105,8 +106,8 @@
             </v-card>
       <v-card class="pa-5" elevation="0">
         <h3>Competencias</h3>
-        <p class="my-3 text-justify">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi neque quia eius! Ratione ipsam alias dolore, voluptatibus ipsa illo corrupti porro magnam odit earum maxime esse totam blanditiis! Eius, doloribus.</p>
-        <chip-custom v-for="(item, index) in competencias" :key="index" class="mr-3 mt-3" :text="item"></chip-custom>
+        <p class="my-3 text-justify">Las competencias en un curso son habilidades y conocimientos esenciales que se adquieren para lograr un aprendizaje efectivo y alcanzar el éxito en el ámbito profesional.</p>
+        <chip-custom v-for="(item, index) in competences" :key="index" class="mr-3 mt-3" :text="item.name"></chip-custom>
 
       </v-card>
 
@@ -137,10 +138,79 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="infoModel" persistent
+      width="800">
+      <v-card >
+        <v-card-title style="color: white; background-color: #081d87;">TEMA</v-card-title>
+        <div style="border-radius: 8px; height: 500px; width: 100%; overflow: auto;">
+          <p class="pa-4 ma-0" style="white-space: pre-line;" > {{info}}
+          </p>
+
+        </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="grey"
+            text
+            @click="openInfo(-1)"
+          >
+            CERRAR
+          </v-btn>
+        </v-card-actions>
+
+      </v-card>
+
+    </v-dialog>
+
+    <v-dialog v-model="dialogAdd" persistent
+      width="500">
+      <v-card>
+        <v-card-title class="" style="color: white; background-color: #081d87;">
+          Registrar Tema
+        </v-card-title>
+
+        <v-form class="pa-6">
+          <v-text-field v-model="entityProperty.title" dense label="Titulo" hide-details outlined class="mb-3"></v-text-field>
+          <v-text-field v-model="entityProperty.description" dense label="Descripción" hide-details outlined class="mb-3"></v-text-field>
+          <v-textarea
+            clearable
+            outlined
+            hide-details
+            clear-icon="mdi-close-circle"
+            label="Archivo"
+            rows="8"
+            v-model="entityProperty.file"
+          ></v-textarea>
+          <!-- <v-text-field v-model="entityProperty.file" dense label="Archivo" hide-details outlined class="mb-3"></v-text-field> -->
+
+        </v-form>
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="red"
+            text
+            @click="dialogAdd = false"
+          >
+            CERRAR
+          </v-btn>
+          <v-btn
+            color="#081d87"
+            text
+            @click="addTopic"
+          >
+            REGISTRAR
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
+    </v-dialog>
+
     <v-dialog
       v-model="evaDialog"
       persistent
-      width="500"
+      width="650"
     >
       <v-card>
         <v-card-title class="" style="color: white; background-color: #081d87;">
@@ -150,7 +220,13 @@
         
 
 
-        <v-card-text class="mt-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, reprehenderit fuga? Voluptate, rem dolorem quam debitis impedit explicabo minima quaerat quidem dignissimos officia, omnis architecto soluta ullam deserunt tempora mollitia.</v-card-text>
+        <v-card-text class="mt-5">
+          <v-card v-for="(item, index) in repuestas" :key="index" outlined class="pa-3 mb-2">
+            <p class="mb-3 font-weight-bold">{{item.question}}</p>  
+            <p v-for="(option, i) in item.options" :key="i" class="my-0 font-weight-light">{{i +') '}} {{option}}</p>  
+          </v-card>
+          
+        </v-card-text>
 
         <v-divider></v-divider>
 
@@ -179,6 +255,7 @@
 
 <script>
 import ChipCustom from '@/components/ChipCustom.vue'
+import { Configuration, OpenAIApi } from "openai";
 // import CardCustom from '@/components/CardCustom.vue'
 
   export default {
@@ -190,11 +267,25 @@ import ChipCustom from '@/components/ChipCustom.vue'
     },
 
     data: () => ({
+      dialogAdd: false,
+      competences: null,
+      topics: null,
+      entityProp: null,
       dialog: false,
       isActive: false,
       overlay: false,
       evaDialog: false,
+      contador: 0,
       accordion: 0,
+      repuestas: null,
+      info: null,
+      infoModel: false,
+      
+      entityProperty: {
+        title: "",
+        description: "",
+        file: "",
+      },
       items: [
         { title: 'Click Me1' },
         { title: 'Click Me2' },
@@ -225,24 +316,113 @@ import ChipCustom from '@/components/ChipCustom.vue'
       'Ética y valores',
       ]
     }),
+    computed:{
+      pageId() {
+        return this.$route.params.id;
+      },
+      
+    },
     methods:{
+      openInfo(i){
+        this.infoModel = !this.infoModel;
+        if (i==-1) {
+          this.info = '';
+          
+        } else {
+          this.info = this.topics[i].file;   
+          console.log('TEXT INFO--->', this.info);       
+        }
+
+      },
       logDetalle(item){
         console.log('LOG ITEM--->',item);
+      },
+      openAdd(){
+        this.dialogAdd = true;
       },
       backPage(){
         this.$router.push({
           name: "courses",
         });
       },
-      activeOverlay(){
+      async addTopic(){
+        try {
+          await this.$axios.post(`courses/${this.pageId}/topics`,this.entityProperty);
+          this.initData();
+          this.entityProperty= {
+            title: "",
+            description: "",
+            file: "",
+          };
+          this.dialogAdd=false;
+        } catch (error) {
+          
+        }
+      },
+      async initData(){
+        try {
+          const {data} = await this.$axios.get(`courses/${this.pageId}`);
+          const coursesData = await this.$axios.get(`courses/${this.pageId}/competences`);
+          const topicsData = await this.$axios.get(`courses/${this.pageId}/topics`);
+          this.entityProp = data;
+          console.log('DATA----->', data);
+          this.competences = coursesData.data;
+          console.log('COMPETENCES----->', this.competences);
+          this.topics = topicsData.data;
+          console.log('TOPICS----->', this.topics);
+        } catch (error) {
+          
+        }
+      },
+      async generateEva(i){
         this.overlay = true;
         this.isActive = true;
+
+        const configuration = new Configuration({
+            organization: "org-UqsW0fZ1dvRcaKpocOnreCrB",
+            apiKey: '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',
+        });
+        const openai = new OpenAIApi(configuration);
+
+        
+        const promptAll = `Eres un profesor de una institucion educativa, analiza el siguiente TEMA00\${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00\${this.id}:{${this.topics[i].file}}\n\nGenera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_order\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]`;
+        const promptFinal = promptAll.toString();
+
+        const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_order\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
+        
+        const response = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: promptFinal,
+          max_tokens: 256,
+          temperature: 0,
+        });
+
+        console.log('RESPONSE--->',response );
+        this.repuestas = JSON.parse(response.data.choices[0].text.trim());
+
+        
+        this.overlay = false;
+        this.isActive = false;          
+        this.evaDialog = true; 
+
+
+      },
+      async activeOverlay(i){
+        
+        this.overlay = true;
+        this.isActive = true;
+        await this.generateEva(i);
         setTimeout(() => {
+          console.log('RESPUESTAS', this.repuestas);
           this.overlay = false;
           this.isActive = false;          
           this.evaDialog = true;          
         }, 5500);
+
       }
+    },
+    async created(){
+      await this.initData();
     }
 
   }
