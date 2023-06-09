@@ -17,7 +17,6 @@
                 <v-row  outlined>
                     <v-col>
                         <v-card outlined class="pa-5">
-                            <v-card-detail>
                                 <div>
                                     <h3>Name</h3>
                                     <p>Jose Valer Peres</p>
@@ -30,7 +29,6 @@
                                     <h3>Cellphone</h3>
                                     <p class="ma-0">+51 987 654 321</p>
                                 </div>
-                            </v-card-detail>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -40,7 +38,6 @@
                 <v-row>
                     <v-col>
                         <v-card outlined class="pa-5">
-                            <v-card-detail>
                                 <div class="pb-4">
                                     <h3>Email</h3>
                                     <span>jvalerperez@asimov.edu.pe</span>
@@ -49,7 +46,6 @@
                                     <h3>Password</h3>
                                     <span>*********</span>
                                 </div>
-                            </v-card-detail>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -96,7 +92,7 @@
         </v-card>
         <div style="width: 100%; border-radius: 8px;">
             <v-card outlined class="pa-5 d-flex justify-center align-center">
-                <v-img src="https://i.ibb.co/nsRbH6p/cuanto-gana-un-profesor-en-colombia-asi-funciona-el-escalafon-docente.jpg" aspect-ratio="0.75"></v-img>
+                <v-img src="https://i.ibb.co/nsRbH6p/cuanto-gana-un-profesor-en-colombia-asi-funciona-el-escalafon-docente.jpg" aspect-ratio="0.75" position="18%"></v-img>
             </v-card>
         </div>
     </div>

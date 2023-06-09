@@ -23,11 +23,16 @@
         </div>
       </v-card>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${!oneColumn?'1fr':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :max-title="maxTitle">
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
+          
+          <template #leftBottom>
+            <slot name="leftBottom">
+            </slot>
+          </template>
+
           <template #bottom>
             <slot name="bottomCard">
             </slot>
-
           </template>
         </card-custom>
 
@@ -126,6 +131,10 @@ import CardCustom from '@/components/CardCustom.vue'
         type: Boolean,
         default: false,
       },
+      hideDetail: {
+        type: Boolean,
+        default: false,
+      },
       hideDelete: {
         type: Boolean,
         default: false,
@@ -191,6 +200,8 @@ import CardCustom from '@/components/CardCustom.vue'
       addItem(){
         this.dialog = true;
         this.onEdit = false;
+        this.$emit('edit', false);
+
         this.cleanProperty(this.entityProperty);        
       },
       addEditItem(){
@@ -223,8 +234,8 @@ import CardCustom from '@/components/CardCustom.vue'
         this.cleanProperty(this.entityProperty);
         this.definirPropiedadesIguales(this.entityProperty,sampleData);
         this.dialog = true;
-
         
+        this.$emit('edit', sampleData);
       },
       deleteItem(id){
         this.loadingAddEdit = true;

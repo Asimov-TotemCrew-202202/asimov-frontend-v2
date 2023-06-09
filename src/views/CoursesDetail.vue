@@ -21,7 +21,7 @@
 
       </v-card>
       <div class="d-flex pl-3 mt-5 align-center"><v-icon size="30" color="#081d87" class="mr-3">mdi-tooltip-check</v-icon> <h2 class="py-3">Temas</h2> <v-spacer></v-spacer>
-        <v-btn color="#081d87" class="mr-4" outlined @click="openAdd"> <v-icon class="mr-2">mdi-plus</v-icon>AÑADIR</v-btn></div>
+        <v-btn color="#081d87" class="mr-4 elevation-0" dark @click="openAdd"> <v-icon class="mr-2">mdi-plus</v-icon>AGREGAR</v-btn></div>
       <v-expansion-panels class="elevation-0">
       <v-expansion-panel
       class="elevation-0"
@@ -107,7 +107,7 @@
       <v-card class="pa-5" elevation="0">
         <h3>Competencias</h3>
         <p class="my-3 text-justify">Las competencias en un curso son habilidades y conocimientos esenciales que se adquieren para lograr un aprendizaje efectivo y alcanzar el éxito en el ámbito profesional.</p>
-        <chip-custom v-for="(item, index) in competences" :key="index" class="mr-3 mt-3" :text="item.name"></chip-custom>
+        <chip-custom v-for="(item, index) in competences" :key="index" class="mr-3 mt-3" :text="item.name" @click="openCompetence(item.id)" />
 
       </v-card>
 
@@ -147,6 +147,8 @@
           </p>
 
         </div>
+        <v-divider></v-divider>
+
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -163,7 +165,7 @@
     </v-dialog>
 
     <v-dialog v-model="dialogAdd" persistent
-      width="500">
+      width="650">
       <v-card>
         <v-card-title class="" style="color: white; background-color: #081d87;">
           Registrar Tema
@@ -177,11 +179,10 @@
             outlined
             hide-details
             clear-icon="mdi-close-circle"
-            label="Archivo"
+            label="Contenido"
             rows="8"
             v-model="entityProperty.file"
           ></v-textarea>
-          <!-- <v-text-field v-model="entityProperty.file" dense label="Archivo" hide-details outlined class="mb-3"></v-text-field> -->
 
         </v-form>
         <v-divider></v-divider>
@@ -237,18 +238,68 @@
             text
             @click="evaDialog = false"
           >
-            CANCEL
+            CANCELAR
           </v-btn>
           <v-btn
             color="#081d87"
             text
-            @click="evaDialog = false"
+            @click="addExam"
           >
-            CREATE
+            REGISTRAR
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="dialogCompetence"
+      persistent
+      width="650"
+    >
+      <v-card>
+        <v-card-title class="" style="color: white; background-color: #081d87;">
+          COMPETENCIA {{ competencia.name }}
+        </v-card-title>
+        
+        
+        
+        
+        <v-card-text class="mt-5">
+          {{ competencia.description }}
+          
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="red"
+            text
+            @click="dialogCompetence = false"
+          >
+            CERRAR
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-snackbar
+      v-model="snackbar"
+      timeout="1500"
+    >
+    {{textError}}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="blue"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
 
   </div>
 </template>
@@ -267,10 +318,13 @@ import { Configuration, OpenAIApi } from "openai";
     },
 
     data: () => ({
+      textError: '',
+      snackbar: false,
+      dialogCompetence: false,
       dialogAdd: false,
       competences: null,
       topics: null,
-      entityProp: null,
+      entityProp: {},
       dialog: false,
       isActive: false,
       overlay: false,
@@ -280,11 +334,15 @@ import { Configuration, OpenAIApi } from "openai";
       repuestas: null,
       info: null,
       infoModel: false,
+      competencia: {},
       
       entityProperty: {
         title: "",
         description: "",
         file: "",
+      },
+      entityExams: {
+        examDetailResources: []
       },
       items: [
         { title: 'Click Me1' },
@@ -359,6 +417,30 @@ import { Configuration, OpenAIApi } from "openai";
           
         }
       },
+      async addExam(){
+        for (let index = 0; index < this.repuestas.length; index++) {
+          this.entityExams.examDetailResources.push({
+            question: this.repuestas[index].question,
+            options: [ ...this.repuestas[index].options ],
+            correctOptionOrder: this.repuestas[index].correct_option_order,
+          })
+        }
+        try {
+          await this.$axios.post(`topics/${this.pageId}/exams`,this.entityExams);
+          this.snackbar = true;
+        } catch (error) {
+          this.textError = error;
+          this.snackbar = true;
+          
+        }
+      },
+      openCompetence(id){
+        console.log('BANDERA');
+        this.dialogCompetence = true;
+        let sampleData = this.competences.find(objeto => objeto.id === id);
+        this.competencia = sampleData;
+        console.log('BANDERA FIN');
+      },
       async initData(){
         try {
           const {data} = await this.$axios.get(`courses/${this.pageId}`);
@@ -398,25 +480,29 @@ import { Configuration, OpenAIApi } from "openai";
         });
 
         console.log('RESPONSE--->',response );
-        this.repuestas = JSON.parse(response.data.choices[0].text.trim());
+        try {
+          this.repuestas = JSON.parse(response.data.choices[0].text.trim());
+          this.evaDialog = true;          
+          this.overlay = false;
+          this.isActive = false;          
+
+          
+        } catch (error) {
+          this.overlay = false;
+          this.isActive = false;          
+          this.snackbar = true; 
+          this.textError = error;
+          this.evaDialog = false;          
+        }
 
         
-        this.overlay = false;
-        this.isActive = false;          
-        this.evaDialog = true; 
-
 
       },
       async activeOverlay(i){
         
-        this.overlay = true;
-        this.isActive = true;
         await this.generateEva(i);
         setTimeout(() => {
           console.log('RESPUESTAS', this.repuestas);
-          this.overlay = false;
-          this.isActive = false;          
-          this.evaDialog = true;          
         }, 5500);
 
       }

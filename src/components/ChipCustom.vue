@@ -1,5 +1,5 @@
 <template>
-  <v-chip class="" :color="showHoverIcon?'#081d87':''" label :text-color="showHoverIcon?'#ffffff':''" @mouseover="showIcon" @mouseleave="hideIcon">
+  <v-chip class="" :color="showHoverIcon?'#081d87':''" label :text-color="showHoverIcon?'#ffffff':''" @mouseover="showIcon" @mouseleave="hideIcon" @click="click">
     <v-icon v-if="showHoverIcon" left>
       mdi-label
     </v-icon>
@@ -28,6 +28,9 @@
       },
       hideIcon() {
         this.showHoverIcon = false;
+      },
+      click() {
+        this.$emit('click');
       }
     }
   }

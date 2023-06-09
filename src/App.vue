@@ -29,13 +29,24 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 *{
   font-family: 'Manrope', sans-serif;
   /* font-family: 'Montserrat', sans-serif; */
+  ::-webkit-scrollbar-thumb,
+.v-navigation-drawer__content::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(0, 0, 0, 0);
+  border-radius: 60px;
+  box-shadow: inset 0 0 0 12px rgba(0, 0, 0, 0.37);
+}
+::-webkit-scrollbar,
+.v-navigation-drawer__content::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
 }
 
 .fade-enter-active,
@@ -49,4 +60,6 @@ export default {
 .fade-leave-active {
   opacity: 0;
 }
+
+
 </style>
