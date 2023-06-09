@@ -90,14 +90,19 @@
           route: 'comunicados',
         },
         {
+          icon: 'mdi-check-decagram',
+          text: 'Competencias',
+          route: 'competencias',
+        },
+        {
           icon: 'mdi-account-group',
           text: 'Profesores',
-          route: 'sample',
+          route: 'profesores',
         },
         {
           icon: 'mdi-account',
           text: 'Profile',
-          route: 'sample',
+          route: 'profile',
         },
       ],
       model: 0,

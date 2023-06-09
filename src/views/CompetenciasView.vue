@@ -1,10 +1,10 @@
 <template>
-    <crud-custom title-crud="Comunicados" custom-put hide-detail max-title :end-point="endPoint" name-crud="Comunicado" icon="mdi-bullhorn-variant" :entity-property="entityProperty" title-card="title"  :headers="header" one-column>
+    <crud-custom title-crud="Competencias" max-title hide-detail hide-delete :end-point="endPoint" name-crud="Competencia" icon="mdi-check-decagram" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
       <template #leftBottom>
         <v-btn fab small dense color="deep-purple accent-3" dark elevation="0" class="mr-2"><v-icon class="mr-0" small>mdi-menu</v-icon></v-btn>
       </template>
       <template #form>
-          <v-text-field dense label="Titulo" hide-details outlined class="mb-3" v-model="entityProperty.title"></v-text-field>
+          <v-text-field dense label="Titulo" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
           <v-textarea rows="4" dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description"></v-textarea>
       </template>
     </crud-custom>
@@ -27,20 +27,17 @@ export default {
       { text: "Descripción", value: "description" },
     ],
     entityProperty:{
-      title: '',
+      name: '',
       description: '',
     },
   }),
 
-//   watch:{
-//     dataComunicados(newVal, oldVal){
-//         console.log('NEW VAL --->', newVal);
-//     }
-//   },
+  watch:{
+  },
 
   computed:{
     endPoint(){
-      return `principals/${1}/statements`;
+      return `competences`;
     }
   },
 

@@ -23,11 +23,16 @@
         </div>
       </v-card>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${!oneColumn?'1fr':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item.name}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete">
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
+          
+          <template #leftBottom>
+            <slot name="leftBottom">
+            </slot>
+          </template>
+
           <template #bottom>
             <slot name="bottomCard">
             </slot>
-
           </template>
         </card-custom>
 
@@ -75,7 +80,6 @@
   </div>
   <div style="width: 100%; border-radius: 8px;">
     <slot name="rightColumn"></slot>
-    
     </div>
   </div>
 </template>
@@ -91,6 +95,10 @@ import CardCustom from '@/components/CardCustom.vue'
     },
 
     props:{
+      titleCard: {
+        type: String,
+        default: 'name'
+      },
       endPoint: {
         type: String,
         default: 'courses'
@@ -112,6 +120,18 @@ import CardCustom from '@/components/CardCustom.vue'
         default: () => [{ text: "Descripción", value: "description" },]
       },
       hideEdit: {
+        type: Boolean,
+        default: false,
+      },
+      maxTitle: {
+        type: Boolean,
+        default: false,
+      },
+      customPut: {
+        type: Boolean,
+        default: false,
+      },
+      hideDetail: {
         type: Boolean,
         default: false,
       },
@@ -139,6 +159,7 @@ import CardCustom from '@/components/CardCustom.vue'
 
     data: () => ({
       data: null,
+      dataId: null,
       loading: false,
       loadingAddEdit: false,
       loadingCrud: false,
@@ -156,6 +177,14 @@ import CardCustom from '@/components/CardCustom.vue'
         },
       ],
     }),
+    computed: {
+      customEndPoint(){
+        const string = this.endPoint;
+        const parts = string.split('/');
+        const result = parts[parts.length - 1];
+        return result;
+      }
+    },
     methods:{
       logDetalle(id){
         this.$router.push({
@@ -171,16 +200,18 @@ import CardCustom from '@/components/CardCustom.vue'
       addItem(){
         this.dialog = true;
         this.onEdit = false;
+        this.$emit('edit', false);
+
         this.cleanProperty(this.entityProperty);        
       },
       addEditItem(){
         this.loadingAddEdit = true;
         console.log('SAMPLE--->', this.entityProperty);
-        this.$axios.post(this.endPoint, this.entityProperty)
+        this.$axios[this.onEdit? 'put':'post'](`${this.customPut && this.onEdit ? this.customEndPoint :this.endPoint}${this.onEdit?('/'+this.dataId):''}`, this.entityProperty)
         .then(response => {
           console.log('STATUS ----> ', response.status);
           this.cleanProperty(this.entityProperty);
-          this.loadingAddEdit = true;
+          this.loadingAddEdit = false;
           this.dialog = false;
           this.getData();
         })
@@ -197,20 +228,18 @@ import CardCustom from '@/components/CardCustom.vue'
       },
       setItem(data){
         this.onEdit = true;
-        this.$axios.get(`${this.endPoint}/${data}`)
-        .then(response => {
-          console.log('EDIT DATA ----> ', response.data);
-          this.cleanProperty(this.entityProperty);
-          this.definirPropiedadesIguales(this.entityProperty,response.data);
-          this.dialog = true;
-        })
-        .catch(error => {
-          console.error(error);
-        });
+
+        let sampleData = this.data.find(objeto => objeto.id === data);
+        this.dataId = data;
+        this.cleanProperty(this.entityProperty);
+        this.definirPropiedadesIguales(this.entityProperty,sampleData);
+        this.dialog = true;
+        
+        this.$emit('edit', sampleData);
       },
       deleteItem(id){
         this.loadingAddEdit = true;
-        this.$axios.delete(`${this.endPoint}/${id}`)
+        this.$axios.delete(`${this.customPut ? this.customEndPoint :this.endPoint}/${id}`)
         .then(response => {
           console.log('STATUS ----> ', response.status);
           this.cleanProperty(this.entityProperty);
