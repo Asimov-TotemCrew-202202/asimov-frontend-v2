@@ -10,11 +10,11 @@
               <v-form ref="form" validate-on="submit lazy" @submit.prevent="login">
                 <v-text-field class="my-3"
                     dense
-                    :rules="emailRules"
-                    v-model="user.email"
+                    :rules="usernameRules"
+                    v-model="user.username"
                     hide-details="auto"
-                    label="E-mail"
-                    placeholder="example@mail.com"
+                    label="Username"
+                    placeholder="pcasimov"
                     required outlined
                 >
                   <template v-slot:append>
@@ -28,7 +28,6 @@
                 </v-text-field>
                 <v-text-field class="mt-3 mb-4"
                     dense
-                    
                     :rules="passwordRules"
                     v-model="user.password"
                     label="Password"
@@ -47,19 +46,11 @@
                 </v-text-field>
                 <v-card-actions>
           <v-row>
-<<<<<<< HEAD
-            <v-col cols="12" class="pb-0">
-              <v-btn block color="#0b2ac4" dark elevation="0" @click="pushToHome" class="mb-2">
-                LOG IN
-              </v-btn>
-              <v-btn block text @click="pushToSign">
-=======
             <v-col cols="12">
-              <v-btn block color="#0b2ac4" dark elevation="0" type="submit" class="mb-2">
+              <v-btn @click="login" block color="#0b2ac4" dark elevation="0" type="submit" class="mb-2">
                 LOG IN
               </v-btn>
               <v-btn block text @click="register">
->>>>>>> feature/authentication
                 SIGN UP
               </v-btn>
 
@@ -94,17 +85,12 @@ import User from '@/models/user';
           return 'Password is required.'
         }
       ],
-      emailRules: [
+      usernameRules: [
         value => {
           if (value) return true
 
-          return 'E-mail is required.'
-        },
-        value => {
-          if (/.+@.+\..+/.test(value)) return true
-
-          return 'E-mail must be valid.'
-        },
+          return 'Username is required.'
+        }
       ],
     };
   },
@@ -114,44 +100,33 @@ import User from '@/models/user';
     },
 
     methods:{
-<<<<<<< HEAD
-      pushToHome() {
-        router.push('/home');
-      },
-      pushToSign() {
-        router.push('/signup');
-      },
-=======
       async login() {
 
         const { valid } = await this.$refs.form.validate();
         
         if (!valid) {
-          if (this.user.email && this.user.password) {
-          this.$store.dispatch('auth/login', this.user).then(
+          if (this.user.username && this.user.password) {
+          await this.$store.dispatch('auth/login', this.user).then(
             () => {
-              this.$router.push('/home');
+              this.$router.push('/home').catch(()=>{});
             },
             error => {
               this.showError = true;
-              console.log(error.response.status);
+              console.warn(error.response.status);
             }
           );
         }
         }
       },
       register() {
-
+        this.$router.push('/signup').catch(()=>{});
       },
     },
 
     mounted(){
       const user = this.$store.state.auth.user;
 
-      console.log(user);
-
       if (user) this.$router.push('/home');
->>>>>>> feature/authentication
     }
   }
 </script>
