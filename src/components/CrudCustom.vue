@@ -187,10 +187,7 @@ import CardCustom from '@/components/CardCustom.vue'
     },
     methods:{
       logDetalle(id){
-        this.$router.push({
-          name: `${this.endPoint}-detail`,
-          params: { id },
-        });
+        this.$emit('detalle', id);
       },
       cleanProperty(objeto){
         for (let propiedad in objeto) {

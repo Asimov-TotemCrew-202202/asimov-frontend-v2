@@ -35,9 +35,9 @@
           </p>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn elevation="0" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon>INFO</v-btn>
-            <v-btn elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
-            <div elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>EVALUACIÓN IA</div>
+            <v-btn elevation="0" color="warning" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon>INFO</v-btn>
+            <v-btn color="green" dark elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
+            <div elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>

@@ -1,5 +1,5 @@
 <template>
-  <crud-custom title-crud="Cursos" end-point="courses" name-crud="Curso" icon="mdi-bullhorn-variant" :entity-property="entityProperty"  :headers="header" @edit="onEdit">
+  <crud-custom title-crud="Cursos" end-point="courses" name-crud="Curso" icon="mdi-bullhorn-variant" :entity-property="entityProperty"  :headers="header" @edit="onEdit" @detalle="onDetail">
     <template #form>
         <v-text-field dense label="Nombre" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
         <v-textarea dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description" rows="4" ></v-textarea>
@@ -54,6 +54,12 @@ methods: {
   onEdit(value){
     this.flagEdit = true;
     console.log('VALUE ---> ', value);
+  },
+  onDetail(id){
+    this.$router.push({
+      name: `courses-detail`,
+      params: { id },
+    });
   },
   async getData() {
     await this.$axios.get('competences')

@@ -1,5 +1,12 @@
 <template #default>
-  <div  class="d-flex justify-center">
+  <div >
+    <v-overlay :value="loading">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+
     <v-card color="#eeeeee" elevation="0">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">mdi-view-dashboard</v-icon> <h2>Dashboard</h2>
@@ -9,9 +16,9 @@
       <standar-layaout>
         <template #rightColumn>
           <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-bullhorn-variant</v-icon> <h2 class="py-3">Comunicados</h2></div>
-            <v-card v-for="(item, index) in 4" :key="index" outlined class="mb-2">
-              <v-card-title>SAMPLE</v-card-title>
-              <v-card-text class="text-justify" style="font-size: 1em;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit quas dolore hic voluptate ex ut architecto placeat eligendi aliquam. Quisquam, molestiae odio. Cum iusto, libero saepe voluptas in culpa reiciendis?</v-card-text>
+            <v-card v-for="(item, index) in lastFive" :key="index" outlined class="mb-2">
+              <v-card-title>{{item.title}}</v-card-title>
+              <v-card-text class="text-justify" style="font-size: 1em;">{{item.description}}</v-card-text>
             </v-card>
         </template>
         <template #leftColumn>
@@ -36,22 +43,23 @@
               </div>
             </v-card>
             <v-card class="pa-3" outlined>
-
               <apexchart
-      type="bar"
-      height="240"
-      width="100%"
-      :options="chartOptions"
-      :series="series"
-    ></apexchart>
+                type="bar"
+                height="240"
+                width="100%"
+                :options="chartOptions"
+                :series="series"
+              ></apexchart>
             </v-card>
 
-            <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-account-group</v-icon> <h2 class="py-3">Profesores</h2></div>
+            <!-- <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-account-group</v-icon> <h2 class="py-3">Profesores</h2></div>
+            <div style="border: 1px solid #081d87;">
+              <v-card v-for="(item, index) in 2" :key="index" outlined class="mb-2">
+                <v-card-title>SAMPLE</v-card-title>
+                <v-card-text class="text-justify" style="font-size: 1em;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit quas dolore hic voluptate ex ut architecto placeat eligendi aliquam. Quisquam, molestiae odio. Cum iusto, libero saepe voluptas in culpa reiciendis?</v-card-text>
+              </v-card>
+            </div> -->
           
-            <v-card v-for="(item, index) in 2" :key="index" outlined class="mb-2">
-              <v-card-title>SAMPLE</v-card-title>
-              <v-card-text class="text-justify" style="font-size: 1em;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit quas dolore hic voluptate ex ut architecto placeat eligendi aliquam. Quisquam, molestiae odio. Cum iusto, libero saepe voluptas in culpa reiciendis?</v-card-text>
-            </v-card>
           </div>
         </template>
       </standar-layaout>
@@ -75,6 +83,8 @@
     },
 
     data: () => ({
+      loading: false,
+      comunicados: [],
       series: [{
         name: 'TEAM A',
         type: 'column',
@@ -147,16 +157,30 @@
    
     }),
 
-    mounted(){
-      setTimeout(() => {
-        console.log('SAMPLE AQUI');
-        this.series[0].data[3] = 12;
-        setTimeout(() => {
-          console.log('SAMPLE AQUI v2');
-          this.series[1].data[5] = 22;
+    computed:{
+      lastFive(){
+        return this.comunicados.slice(-4);
+      }
+    },
+
+    methods:{
+      async initData(){
+        this.loading = true;
+        try {
+          const {data} = await this.$axios.get('principals/1/statements');
+          this.comunicados = data;
+          this.loading = false;
+        } catch (error) {
           
-        }, 1500);
-      }, 1500);
+        }
+      },
+    },
+    mounted(){
+      
+    },
+
+    async created(){
+      await this.initData();
     }
 
   }
