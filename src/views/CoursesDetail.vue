@@ -461,8 +461,8 @@ import { Configuration, OpenAIApi } from "openai";
         this.isActive = true;
 
         const configuration = new Configuration({
-            organization: "org-UqsW0fZ1dvRcaKpocOnreCrB",
-            apiKey: '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',
+            organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
+            apiKey: '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',
         });
         const openai = new OpenAIApi(configuration);
 
