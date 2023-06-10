@@ -6,23 +6,22 @@
           LOG IN
         </v-card-title>
         <v-card-text class="pb-0 px-2">
-              <p v-if="showError" style="color: red;">Password y/o contraseña incorrecta</p>
               <v-form ref="form" validate-on="submit lazy" @submit.prevent="login">
                 <v-text-field class="my-3"
                     dense
                     :rules="usernameRules"
                     v-model="user.username"
                     hide-details
-                    label="Username"
+                    label="Nombre de usuario"
                     placeholder="pcasimov"
                     required outlined
                 >
                   <template v-slot:append>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">mdi-email-outline</v-icon>
+                        <v-icon v-on="on">mdi-card-account-details-outline</v-icon>
                       </template>
-                      Email
+                      Username
                     </v-tooltip>
                   </template>
                 </v-text-field>
@@ -31,7 +30,7 @@
                     :rules="passwordRules"
                     hide-details
                     v-model="user.password"
-                    label="Password"
+                    label="Contraseña"
                     placeholder="*******"
                     type="password"
                     required outlined
@@ -41,10 +40,12 @@
                       <template v-slot:activator="{ on }">
                         <v-icon v-on="on">mdi-key-outline</v-icon>
                       </template>
-                      Password
+                      Contraseña
                     </v-tooltip>
-                  </template>
+                    </template>
                 </v-text-field>
+                <!-- <p v-if="showError" style="color: red;">Password y/o contraseña incorrecta</p> -->
+
                 <v-card-actions>
           <v-row>
             <v-col cols="12">
@@ -62,6 +63,23 @@
             </v-card-text>
       </v-card>
     </v-hover>
+    <v-snackbar
+      color="red"
+      v-model="showError"
+    >
+      Password y/o contraseña incorrecta
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -113,6 +131,9 @@ import User from '@/models/user';
             },
             error => {
               this.showError = true;
+              this.user.username = '';
+              this.user.password = '';
+
               console.warn(error.response.status);
             }
           );
