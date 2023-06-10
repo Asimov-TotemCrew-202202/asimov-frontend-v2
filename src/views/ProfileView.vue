@@ -18,16 +18,16 @@
                     <v-col>
                         <v-card outlined class="pa-5">
                                 <div>
-                                    <h3>Name</h3>
-                                    <p>{{ currentUser.first_name }} {{ currentUser.last_name }}</p>
+                                    <h3>FullName</h3>
+                                    <p>{{ currentUser.first_name }}</p>
                                 </div>
                                 <div>
-                                    <h3>Age</h3>
-                                    <p>54 años</p>
+                                    <h3>Educative Institution</h3>
+                                    <p>{{ currentUser.last_name }}</p>
                                 </div>
                                 <div>
                                     <h3>Cellphone</h3>
-                                    <p class="ma-0">+51 {{ currentUser.phone }}</p>
+                                    <p class="ma-0">{{ currentUser.phone }}</p>
                                 </div>
                         </v-card>
                     </v-col>
