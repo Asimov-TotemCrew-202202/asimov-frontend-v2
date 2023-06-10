@@ -23,7 +23,7 @@
         </div>
       </v-card>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${!oneColumn?'1fr':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
+        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
           
           <template #leftBottom>
             <slot name="leftBottom">
@@ -190,8 +190,8 @@ import CardCustom from '@/components/CardCustom.vue'
       }
     },
     methods:{
-      logDetalle(id){
-        this.$emit('detalle', id);
+      logDetalle(item){
+        this.$emit('detalle', item);
       },
       cleanProperty(objeto){
         for (let propiedad in objeto) {

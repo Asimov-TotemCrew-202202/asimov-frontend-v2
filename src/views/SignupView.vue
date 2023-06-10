@@ -11,7 +11,7 @@
                     dense
                     v-model="user.first_name"
                     :rules="firstNameRules"
-                    hide-details="auto"
+                    hide-details
                     label="Nombre y Apellidos"
                     placeholder="Juan Sanchez"
                     required outlined
@@ -30,7 +30,7 @@
                     dense
                     @blur="createUsername"
                     :rules="emailRules"
-                    hide-details="auto"
+                    hide-details
                     label="E-mail"
                     outlined
                     placeholder="ejemplo@mail.com"
@@ -50,7 +50,7 @@
                     disabled
                     v-model="user.username"
                     dense
-                    hide-details="auto"
+                    hide-details
                     label="Nombre de usuario"
                     placeholder="Username"
                     required outlined
@@ -69,7 +69,7 @@
                     v-model="user.phone"
                     :rules="phoneRules"
                     type="number"
-                    hide-details="auto"
+                    hide-details
                     label="Celular"
                     placeholder="999999999"
                     required outlined
@@ -88,7 +88,7 @@
                     dense
                     v-model="user.last_name"
                     :rules="lastNameRules"
-                    hide-details="auto"
+                    hide-details
                     label="Institución Educativa"
                     placeholder="Colegio I.E."
                     required outlined
@@ -104,7 +104,7 @@
                 </v-text-field>
                 <v-text-field class="mt-3 mb-4"
                     dense
-                    hide-details="auto"
+                    hide-details
                     :rules="passwordRules"
                     v-model="user.password"
                     label="Contraseña"

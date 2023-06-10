@@ -160,7 +160,14 @@
     computed:{
       lastFive(){
         return this.comunicados.slice(-4);
-      }
+      },
+      currentUserDirector() {
+        let roleUser = this.$store.state.auth.user.roles;
+        return roleUser.includes('ROLE_PRINCIPAL');
+      },
+      currentUser() {
+        return this.$store.state.auth.user;
+      },
     },
 
     methods:{
@@ -174,6 +181,12 @@
           
         }
       },
+      async setUserId(){
+        await this.$axios.get(`${this.currentUserDirector? 'principals':'teachers'}/getByUser/${this.currentUser.id}`)
+            .then(responseAlter => {
+              localStorage.setItem('userData', JSON.stringify(responseAlter.data));
+            }); 
+      }
     },
     mounted(){
       
@@ -181,6 +194,7 @@
 
     async created(){
       await this.initData();
+      await this.setUserId();
     }
 
   }

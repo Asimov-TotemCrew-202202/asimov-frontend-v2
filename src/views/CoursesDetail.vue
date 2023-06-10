@@ -35,9 +35,9 @@
           </p>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn elevation="0" color="warning" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon>INFO</v-btn>
-            <v-btn color="green" dark elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
-            <div elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
+            <v-btn elevation="0" color="warning" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon> VER INFORMACIÓN</v-btn>
+            <v-btn v-if="!currentUserDirector" :disabled="item.status==true" @click="completeTopic(item.id)" color="success" elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
+            <div v-if="!currentUserDirector" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -92,13 +92,13 @@
               <v-card-title class="d-flex px-4 pb-2">
                 <div><h3>Porcentaje</h3></div>
                 <v-spacer></v-spacer>
-                <div><h3>60%</h3></div>
+                <div><h3>{{percent}}%</h3></div>
               </v-card-title>
               <div class="pb-5 px-4">
                 <v-progress-linear
                   class="rounded-xl"
                   height="20"
-                  value="60"
+                  :value="percent"
                   striped
                   color="#081d87"
                 ></v-progress-linear>
@@ -323,7 +323,7 @@ import { Configuration, OpenAIApi } from "openai";
       dialogCompetence: false,
       dialogAdd: false,
       competences: null,
-      topics: null,
+      topics: [],
       entityProp: {},
       dialog: false,
       isActive: false,
@@ -359,24 +359,20 @@ import { Configuration, OpenAIApi } from "openai";
           number: 5,
         },
       ],
-      competencias:[
-      'Desarrollo personal',
-      'Pensamiento crítico',
-      'Creatividad',
-      'Innovación',
-      'Comunicación efectiva',
-      'Trabajo en equipo',
-      'Ciudadanía',
-      'Liderazgo',
-      'Alfabetización digital',
-      'Aprendizaje continuo',
-      'Resolución de conflictos',
-      'Ética y valores',
-      ]
     }),
     computed:{
       pageId() {
         return this.$route.params.id;
+      },
+      currentUserDirector() {
+        let roleUser = this.$store.state.auth.user.roles;
+        return roleUser.includes('ROLE_PRINCIPAL');
+      },
+      percent() {
+        const totalObjetos = this.topics.length;
+        const objetosTrue = this.topics.filter(obj => obj.status === true);
+        const porcentaje = (objetosTrue.length / totalObjetos) * 100;
+        return porcentaje.toFixed(2);
       },
       
     },
@@ -434,6 +430,17 @@ import { Configuration, OpenAIApi } from "openai";
           
         }
       },
+      async completeTopic(id){
+        try {
+          await this.$axios.post(`topics/${id}/complete`);
+          this.textError = 'TEMA COMPLETADO!';
+          this.snackbar = true;
+          this.initData();
+        } catch (error) {
+          this.textError = error;
+          this.snackbar = true;
+        }
+      },
       openCompetence(id){
         console.log('BANDERA');
         this.dialogCompetence = true;
@@ -462,7 +469,7 @@ import { Configuration, OpenAIApi } from "openai";
 
         const configuration = new Configuration({
             organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
-            apiKey: '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',
+            apiKey: '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',
         });
         const openai = new OpenAIApi(configuration);
 
