@@ -39,6 +39,10 @@
                     <v-col>
                         <v-card outlined class="pa-5">
                                 <div class="pb-4">
+                                    <h3>Username</h3>
+                                    <span>{{ currentUser.username }}</span>
+                                </div>
+                                <div class="pb-4">
                                     <h3>Email</h3>
                                     <span>{{ currentUser.email }}</span>
                                 </div>
@@ -92,7 +96,12 @@
         </v-card>
         <div style="width: 100%; border-radius: 8px;">
             <v-card outlined class="pa-5 d-flex justify-center align-center">
-                <v-img src="https://i.ibb.co/nsRbH6p/cuanto-gana-un-profesor-en-colombia-asi-funciona-el-escalafon-docente.jpg" aspect-ratio="0.75" position="18%"></v-img>
+                <v-img 
+                    v-if="isDirector" 
+                    src="https://sanjuanboscosalamanca.salesianas.org/wp-content/uploads/2019/01/Jes%C3%BAs-M%C2%AA-Calvo-Macho-Director-General.jpg" 
+                    aspect-ratio="0.75" 
+                    position="center"></v-img>
+                <v-img v-else src="https://grupogeard.com/pe/wp-content/uploads/sites/4/2021/11/Escala-docente-peru.jpg" aspect-ratio="0.75" position="18%"></v-img>
             </v-card>
         </div>
     </div>
@@ -108,6 +117,9 @@
         computed: {
             currentUser() {
                 return this.$store.state.auth.user;
+            },
+            isDirector() {
+                return this.$store.state.auth.user.roles[0] === 'ROLE_PRINCIPAL'? true : false;
             }
         },
         methods:{ 
