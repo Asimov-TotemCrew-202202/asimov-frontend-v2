@@ -74,7 +74,7 @@
           color="white"
           text
           v-bind="attrs"
-          @click="snackbar = false"
+          @click="showError = false"
         >
           Close
         </v-btn>
