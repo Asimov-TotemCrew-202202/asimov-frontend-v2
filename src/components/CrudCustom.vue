@@ -13,7 +13,7 @@
         <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
         <div>
-          <v-btn dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
+          <v-btn v-if="!hideAdd" dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
             <v-icon>mdi-plus</v-icon> AÑADIR 
           </v-btn>
           <v-btn dark color="white" class="" :loading="loadingCrud" @click="getData" outlined elevation="0">
@@ -128,6 +128,10 @@ import CardCustom from '@/components/CardCustom.vue'
         default: false,
       },
       customPut: {
+        type: Boolean,
+        default: false,
+      },
+      hideAdd: {
         type: Boolean,
         default: false,
       },

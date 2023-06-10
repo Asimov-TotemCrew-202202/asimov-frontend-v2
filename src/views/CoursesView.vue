@@ -1,5 +1,6 @@
 <template>
-  <crud-custom title-crud="Cursos" end-point="courses" name-crud="Curso" icon="mdi-bullhorn-variant" :entity-property="entityProperty"  :headers="header" @edit="onEdit" @detalle="onDetail">
+  <crud-custom title-crud="Cursos" end-point="courses" name-crud="Curso" 
+  :hide-delete="!currentUserDirector" :hide-edit="!currentUserDirector" icon="mdi-bullhorn-variant" :entity-property="entityProperty"  :headers="header" @edit="onEdit" @detalle="onDetail">
     <template #form>
         <v-text-field dense label="Nombre" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
         <v-textarea dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description" rows="4" ></v-textarea>
@@ -48,6 +49,10 @@ watch:{
 },
 
 computed:{
+  currentUserDirector() {
+    let roleUser = this.$store.state.auth.user.roles;
+    return roleUser.includes('ROLE_PRINCIPAL');
+  },
 },
 
 methods: {

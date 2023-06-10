@@ -10,7 +10,7 @@
       <template #rightColumn>
         <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-information</v-icon> <h2 class="py-3">Información</h2></div>
         <v-card outlined class="pa-3">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae porro nesciunt, eaque suscipit vero numquam, quo possimus aliquam ducimus aliquid quidem obcaecati laborum id placeat illo iure reprehenderit fugit libero?
+          Las competencias en un curso son habilidades y conocimientos esenciales que se adquieren para lograr un aprendizaje efectivo y alcanzar el éxito en el ámbito profesional.
         </v-card>
       </template>
     </crud-custom>
