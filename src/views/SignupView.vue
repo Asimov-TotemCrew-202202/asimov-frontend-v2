@@ -11,18 +11,19 @@
                     dense
                     hide-details="auto"
                     label="Nombre y Apellidos"
-                    placeholder="Luis Rodriguez"
+                    placeholder="Juan Sanchez"
                     required outlined
                 >
                   <template v-slot:append>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">mdi-card-account-details-outline</v-icon>
+                        <v-icon v-on="on">mdi-account-box</v-icon>
                       </template>
-                      Nombre completo
+                      Nombre y Apellidos
                     </v-tooltip>
                   </template>
                 </v-text-field>
+                
                 <v-text-field class="my-3"
                     dense
                     hide-details="auto"
@@ -40,22 +41,40 @@
                   </template>
                 </v-text-field>
                 <v-text-field class="my-3"
+                    disabled
                     dense
-                    type="number"
                     hide-details="auto"
-                    label="Edad"
-                    placeholder="99"
+                    label="Nombre de usuario"
+                    placeholder="Username"
                     required outlined
                 >
                   <template v-slot:append>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">mdi-counter</v-icon>
+                        <v-icon v-on="on">mdi-card-account-details-outline</v-icon>
                       </template>
-                      Edad
+                      Nombre de usuario
                     </v-tooltip>
                   </template>
                 </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    type="number"
+                    hide-details="auto"
+                    label="Celular"
+                    placeholder="999999999"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-phone</v-icon>
+                      </template>
+                      Celular
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                
                 <v-text-field class="my-3"
                     dense
                     hide-details="auto"
@@ -75,7 +94,7 @@
                 <v-text-field class="mt-3 mb-4"
                     dense
                     hide-details="auto"
-                    label="Password"
+                    label="Contraseña"
                     placeholder="*******"
                     type="password"
                     required outlined
@@ -85,7 +104,7 @@
                       <template v-slot:activator="{ on }">
                         <v-icon v-on="on">mdi-key-outline</v-icon>
                       </template>
-                      Password
+                      Contraseña
                     </v-tooltip>
                   </template>
                 </v-text-field>
