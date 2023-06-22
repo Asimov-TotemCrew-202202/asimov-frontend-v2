@@ -37,7 +37,7 @@
             <v-spacer></v-spacer>
             <v-btn elevation="0" color="warning" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon> VER INFORMACIÓN</v-btn>
             <v-btn v-if="!currentUserDirector" :disabled="item.status==true" @click="completeTopic(item.id)" color="success" elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
-            <div v-if="!currentUserDirector" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
+            <div v-if="!currentUserDirector" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i, item.id)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -241,6 +241,7 @@
             CANCELAR
           </v-btn>
           <v-btn
+            :loading="examLoading"
             color="#081d87"
             text
             @click="addExam"
@@ -286,12 +287,14 @@
     <v-snackbar
       v-model="snackbar"
       timeout="1500"
+      dark
+      :color="colorSnak"
     >
     {{textError}}
 
       <template v-slot:action="{ attrs }">
         <v-btn
-          color="blue"
+          dark
           text
           v-bind="attrs"
           @click="snackbar = false"
@@ -319,9 +322,12 @@ import { Configuration, OpenAIApi } from "openai";
 
     data: () => ({
       textError: '',
+      colorSnak: '',
+      examLoading: false,
       snackbar: false,
       dialogCompetence: false,
       dialogAdd: false,
+      selectIdTopic: '',
       competences: null,
       topics: [],
       entityProp: {},
@@ -421,11 +427,18 @@ import { Configuration, OpenAIApi } from "openai";
             correctOptionOrder: this.repuestas[index].correct_option_order,
           })
         }
+        this.examLoading = true;
         try {
-          await this.$axios.post(`topics/${this.pageId}/exams`,this.entityExams);
+          await this.$axios.post(`topics/${this.selectIdTopic}/exams`,this.entityExams);
+          this.colorSnak='green accent-4';
           this.snackbar = true;
+          this.textError = 'Se registro evaluacion exitosamente!';
+          this.evaDialog = false; 
+          this.examLoading = false;
         } catch (error) {
-          this.textError = error;
+          this.colorSnak='red';
+          this.textError = 'Evaluación existente';
+          this.evaDialog = false; 
           this.snackbar = true;
           
         }
@@ -463,13 +476,14 @@ import { Configuration, OpenAIApi } from "openai";
           
         }
       },
-      async generateEva(i){
+      async generateEva(i, sampleId){
         this.overlay = true;
         this.isActive = true;
+        this.selectIdTopic = sampleId;
 
         const configuration = new Configuration({
             organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
-            apiKey: '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',
+            apiKey: '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',
         });
         const openai = new OpenAIApi(configuration);
 
@@ -505,9 +519,9 @@ import { Configuration, OpenAIApi } from "openai";
         
 
       },
-      async activeOverlay(i){
+      async activeOverlay(i, id){
         
-        await this.generateEva(i);
+        await this.generateEva(i, id);
         setTimeout(() => {
           console.log('RESPUESTAS', this.repuestas);
         }, 5500);

@@ -28,15 +28,19 @@
 
 
             <v-card outlined class="mb-2 font-weight-bold">
-              <v-card-title class="d-flex justify-space-between px-4 pb-2">
-                <span>Porcentaje</span>
-                <span class="font-weight-bold">60%</span>
+              <v-card-title class="d-flex justify-space-between px-4 pb-0">
+                <span>Progreso Año Escolar</span>
+                <span class="font-weight-bold">{{currentPercent}}%</span>
+              </v-card-title>
+              <v-card-title class="d-flex justify-space-between px-4 pt-0 pb-2">
+                <span>Inicia:{{ dateInici }}</span>
+                <span>Finaliza:{{ dateFinal }}</span>
               </v-card-title>
               <div class="pb-5 px-4">
                 <v-progress-linear
                   class="rounded"
                   height="10"
-                  value="60"
+                  :value="currentPercent"
                   striped
                   color="#081d87"
                 ></v-progress-linear>
@@ -84,6 +88,8 @@
 
     data: () => ({
       loading: false,
+      dataInici: '',
+      dataFinal: '',
       comunicados: [],
       series: [{
         name: 'TEAM A',
@@ -168,6 +174,61 @@
       currentUser() {
         return this.$store.state.auth.user;
       },
+      dateInici(){
+        const year = new Date().getFullYear();
+        const march = new Date(year, 2, 1); // El mes de marzo es el índice 2 (enero = 0, febrero = 1, marzo = 2)
+        let dayOfWeek = march.getDay(); // Obtener el día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
+
+        // Si el primer día de marzo no es lunes, calcular la fecha del próximo lunes
+        if (dayOfWeek !== 1) {
+          const daysUntilMonday = 1 - dayOfWeek + 7; // Días restantes hasta el próximo lunes
+          march.setDate(march.getDate() + daysUntilMonday);
+        }
+
+        
+        const dayM = march.getDate().toString().padStart(2, '0');
+        const monthM = (march.getMonth() + 1).toString().padStart(2, '0');
+        const yearM = march.getFullYear().toString();
+        return `${dayM}/${monthM}/${yearM}`;
+      },
+      dateFinal(){
+        const year = new Date().getFullYear();
+        const november = new Date(year, 10, 5); // El mes de noviembre es el índice 10 (enero = 0, febrero = 1, ..., noviembre = 10)
+        let dayOfLastWeek = november.getDay(); // Obtener el día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
+        
+        // Si el último día de noviembre no es viernes, calcular la fecha del último viernes
+        if (dayOfLastWeek !== 5) {
+          const daysUntilFriday = 5 - dayOfLastWeek + 7; // Días restantes hasta el próximo viernes
+          november.setDate(november.getDate() + daysUntilFriday);
+        }
+        const dayL = november.getDate().toString().padStart(2, '0');
+        const monthL = (november.getMonth() + 1).toString().padStart(2, '0');
+        const yearL = november.getFullYear().toString();
+        return `${dayL}/${monthL}/${yearL}`;
+      },
+      currentPercent(){
+        const fechaInicioParts = this.dateInici.split("/"); // Dividir la fecha en partes: [día, mes, año]
+        const fechaFinalParts = this.dateFinal.split("/");
+
+        const fechaInicioMs = new Date(fechaInicioParts[2], fechaInicioParts[1] - 1, fechaInicioParts[0]).getTime();
+        const fechaFinalMs = new Date(fechaFinalParts[2], fechaFinalParts[1] - 1, fechaFinalParts[0]).getTime();
+        const fechaActual = new Date();
+        const fechaActualMs = fechaActual.getTime();
+
+        if (fechaActualMs < fechaInicioMs) {
+          // Si la fecha actual es anterior a la fecha de inicio, el progreso es 0%
+          return 0;
+        } else if (fechaActualMs > fechaFinalMs) {
+          // Si la fecha actual es posterior a la fecha final, el progreso es 100%
+          return 100;
+        } else {
+          // Calcular el porcentaje de progreso entre la fecha de inicio y la fecha final
+          const duracionTotalMs = fechaFinalMs - fechaInicioMs;
+          const progresoMs = fechaActualMs - fechaInicioMs;
+          const porcentajeProgreso = (progresoMs / duracionTotalMs) * 100;
+          return Math.floor(porcentajeProgreso); // Redondear a 2 decimales
+        }
+      }
     },
 
     methods:{
@@ -178,6 +239,7 @@
           this.comunicados = data;
           this.loading = false;
         } catch (error) {
+          this.loading = false;
           
         }
       },
@@ -186,7 +248,7 @@
             .then(responseAlter => {
               localStorage.setItem('userData', JSON.stringify(responseAlter.data));
             }); 
-      }
+      },
     },
     mounted(){
       
@@ -194,7 +256,7 @@
 
     async created(){
       await this.initData();
-      await this.setUserId();
+      // await this.setUserId();
     }
 
   }
