@@ -151,6 +151,10 @@ import CardCustom from '@/components/CardCustom.vue'
         type: Object,
         required: true,
       },
+      createEp: {
+        type: String,
+        default: '',
+      },
     },
     
     watch: {
@@ -208,7 +212,7 @@ import CardCustom from '@/components/CardCustom.vue'
       addEditItem(){
         this.loadingAddEdit = true;
         console.log('SAMPLE--->', this.entityProperty);
-        this.$axios[this.onEdit? 'put':'post'](`${this.customPut && this.onEdit ? this.customEndPoint :this.endPoint}${this.onEdit?('/'+this.dataId):''}`, this.entityProperty)
+        this.$axios[this.onEdit? 'put':'post'](`${this.customPut && this.onEdit ? this.customEndPoint :this.createEp != ''? this.createEp: this.endPoint}${this.onEdit?('/'+this.dataId):''}`, this.entityProperty)
         .then(response => {
           console.log('STATUS ----> ', response.status);
           this.cleanProperty(this.entityProperty);

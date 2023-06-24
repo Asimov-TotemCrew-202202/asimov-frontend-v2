@@ -256,7 +256,7 @@
 
     async created(){
       await this.initData();
-      // await this.setUserId();
+      await this.setUserId();
     }
 
   }
