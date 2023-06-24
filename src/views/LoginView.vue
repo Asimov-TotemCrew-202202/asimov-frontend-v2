@@ -32,15 +32,15 @@
                     v-model="user.password"
                     label="Contraseña"
                     placeholder="*******"
-                    type="password"
+                    :type="showPass? 'text':'password'"
                     required outlined
                 >
                   <template v-slot:append>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">mdi-key-outline</v-icon>
+                        <v-icon @click="showPass =!showPass" v-on="on">mdi-{{showPass?'key':'key-outline'}}</v-icon>
                       </template>
-                      Contraseña
+                      {{showPass?'Ocultar ':'Ver '}}Contraseña
                     </v-tooltip>
                     </template>
                 </v-text-field>
@@ -97,6 +97,7 @@ import User from '@/models/user';
     return {
       user: new User('', ''),
       showError: false,
+      showPass: false,
       passwordRules: [
         value => {
           if (value) return true

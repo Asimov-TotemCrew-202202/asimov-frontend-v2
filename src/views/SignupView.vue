@@ -102,6 +102,64 @@
                     </v-tooltip>
                   </template>
                 </v-text-field>
+
+                <v-text-field class="my-3"
+                    dense
+                    v-model="user.specialty"
+                    :rules="lastNameRules"
+                    hide-details
+                    label="Especialidad"
+                    placeholder="Ingeniero"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-school</v-icon>
+                      </template>
+                      Especialidad
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    type="number"
+                    v-model="user.experienceYears"
+                    :rules="lastNameRules"
+                    hide-details
+                    label="Años Experiencia"
+                    placeholder="5"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-timer-sand-complete</v-icon>
+                      </template>
+                      Años Experiencia
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+                <v-text-field class="my-3"
+                    dense
+                    type="number"
+                    v-model="user.salary"
+                    :rules="lastNameRules"
+                    hide-details
+                    label="Salario"
+                    placeholder="S/ 1500"
+                    required outlined
+                >
+                  <template v-slot:append>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on">mdi-cash</v-icon>
+                      </template>
+                      Salario
+                    </v-tooltip>
+                  </template>
+                </v-text-field>
+
                 <v-text-field class="mt-3 mb-4"
                     dense
                     hide-details
@@ -109,15 +167,15 @@
                     v-model="user.password"
                     label="Contraseña"
                     placeholder="*******"
-                    type="password"
+                    :type="typeInput?'text':'password'"
                     required outlined
                 >
                   <template v-slot:append>
-                    <v-tooltip bottom>
+                    <v-tooltip bottom >
                       <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">mdi-key-outline</v-icon>
+                        <v-icon @click="typeInput = !typeInput" v-on="on">mdi-{{typeInput?'key':'key-outline'}}</v-icon>
                       </template>
-                      Contraseña
+                      {{typeInput?'Ocultar ':'Ver '}}Contraseña
                     </v-tooltip>
                   </template>
                 </v-text-field>
@@ -168,10 +226,11 @@
     name: 'LoginView',
     data() {
       return {
-        user: new UserRegister('', '', '', '', '', '', []),
+        user: new UserRegister('', '', '', '', '', '', '', '', '', []),
         showResult: false,
         message: '',
         successful: false,
+        typeInput: false,
         firstNameRules: [
           value => {
             if (value) return true
