@@ -529,8 +529,8 @@ import { Configuration, OpenAIApi } from "openai";
 
         // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
         const configuration = new Configuration({
-            organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
-            apiKey: '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',
+            organization: "org-",
+            apiKey: 'sk-',
         });
         const openai = new OpenAIApi(configuration);
           // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------

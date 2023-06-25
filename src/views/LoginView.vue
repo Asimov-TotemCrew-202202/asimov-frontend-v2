@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-hover v-slot="{ hover }">
-      <v-card :elevation="hover?12:0" class="transition-swing pa-7"  outlined>
+      <v-card :elevation="hover?12:0" class="transition-swing pa-7" width="350" outlined>
         <v-card-title class="justify-center font-weight-bold pt-0">
           LOG IN
         </v-card-title>

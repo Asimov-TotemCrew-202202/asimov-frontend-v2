@@ -1,9 +1,9 @@
 <template>
   
   <div class="authLayout" ref='vantaRef'>
-    <h2 style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); color: #ffffff;">ASIMOV</h2>
+    <h2 style="position: absolute; top: 7%; left: 50%; transform: translateX(-50%); color: #ffffff;">ASIMOV</h2>
     <div style="position: absolute; text-align: center; line-height: 1.7; bottom: 5%; left: 50%; transform: translateX(-50%); color: #ffffff;">
-      <p>v.1.0.0 <br> {{anioActual}}  ·  &copy;TotemCrew</p>
+      <p>v.2.5.0 <br> {{anioActual}}  ·  &copy;<a href="https://asimov-totemcrew-202202.github.io/landing-page/" target="_blank" style=" color:white;">TotemCrew</a></p>
       
     </div>
     <transition name="fade" mode="out-in">
