@@ -9,11 +9,38 @@
         <v-card outlined class="pa-3">
           Los comunicados sirven a manera de mensaje masivo para todos los docentes de tu Institución educativa.
         </v-card>
-        <div v-if="dataComunicados" class="d-flex pl-3 mt-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-file-document</v-icon> <h2 class="py-3">Contenido</h2></div>
-        <v-card v-if="dataComunicados" outlined class="pa-3">
-          <v-card-title class="pa-0">{{itemComu.title }}</v-card-title>
+        <v-alert
+          :value="dataComunicados"
+          color="blue-grey"
+          dark
+          border="top"
+          icon="mdi-message-alert-outline"
+          transition="scale-transition"
+          class="mt-3"
+        >
+          <span class="font-weight-bold">{{itemComu.title }}</span>
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+
           {{itemComu.description }}
-        </v-card>
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+          <v-row>
+            <v-spacer style="color: white"></v-spacer>
+            <v-btn
+              class="mr-3 my-2"
+              color="white"
+              outlined
+              @click="dataComunicados= !dataComunicados"
+            >
+              CERRAR
+            </v-btn>
+          </v-row>
+        </v-alert>
       </template>
     </crud-custom>
 </template>
@@ -67,5 +94,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.v-application .info{
+  background-color: white !important;
+  border-color: white !important;
+}
 </style>
