@@ -43,7 +43,10 @@ export default {
 
   computed:{
     endPoint(){
-      return `principals/${1}/statements`;
+      return `principals/${this.currentUserData.id}/statements`;
+    },
+    currentUserData() {
+      return JSON.parse(localStorage.getItem('userData'));
     },
   },
 

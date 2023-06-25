@@ -174,6 +174,9 @@
       currentUser() {
         return this.$store.state.auth.user;
       },
+      currentUserData() {
+        return JSON.parse(localStorage.getItem('userData'));
+      },
       dateInici(){
         const year = new Date().getFullYear();
         const march = new Date(year, 2, 1); // El mes de marzo es el índice 2 (enero = 0, febrero = 1, marzo = 2)
@@ -235,12 +238,11 @@
       async initData(){
         this.loading = true;
         try {
-          const {data} = await this.$axios.get('principals/1/statements');
+          const {data} = await this.$axios.get(`principals/${this.currentUserData.id}/statements`);
           this.comunicados = data;
           this.loading = false;
         } catch (error) {
-          this.loading = false;
-          
+          // this.loading = false;
         }
       },
       async setUserId(){
@@ -255,8 +257,8 @@
     },
 
     async created(){
-      await this.initData();
       await this.setUserId();
+      await this.initData();
     }
 
   }

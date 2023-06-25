@@ -49,7 +49,7 @@
                 <v-card-actions>
           <v-row>
             <v-col cols="12">
-              <v-btn @click="login" block color="#0b2ac4" dark elevation="0" type="submit" class="mb-2">
+              <v-btn @click="login" :loading="loadingPost" block color="#0b2ac4" dark elevation="0" type="submit" class="mb-2">
                 LOG IN
               </v-btn>
               <v-btn block text @click="register">
@@ -97,6 +97,7 @@ import User from '@/models/user';
     return {
       user: new User('', ''),
       showError: false,
+      loadingPost: false,
       showPass: false,
       passwordRules: [
         value => {
@@ -125,12 +126,15 @@ import User from '@/models/user';
         const { valid } = await this.$refs.form.validate();
         
         if (!valid) {
+          this.loadingPost = true;
           if (this.user.username && this.user.password) {
-          await this.$store.dispatch('auth/login', this.user).then(
-            () => {
-              this.$router.push('/home').catch(()=>{});
+            await this.$store.dispatch('auth/login', this.user).then(
+              () => {
+                this.$router.push('/home').catch(()=>{});
+              this.loadingPost = false;
             },
             error => {
+              this.loadingPost = false;
               this.showError = true;
               this.user.username = '';
               this.user.password = '';

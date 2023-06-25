@@ -1,5 +1,11 @@
 <template>
   <div style="display: grid; grid-template-columns: 70% 30%; grid-template-rows: 1fr; gap: 10px;">
+    <v-overlay :value="loadingView">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
 
   <div class="d-flex justify-center">
     <v-card color="#eeeeee" elevation="0" style="width: 100%;">
@@ -336,6 +342,7 @@ import { Configuration, OpenAIApi } from "openai";
       archivo: null,
       colorSnak: '',
       examLoading: false,
+      loadingView: false,
       loadingExamView: false,
       showExam: false,
       snackbar: false,
@@ -508,6 +515,7 @@ import { Configuration, OpenAIApi } from "openai";
         console.log('BANDERA FIN');
       },
       async initData(){
+        this.loadingView = true;
         try {
           const {data} = await this.$axios.get(`courses/${this.pageId}`);
           const coursesData = await this.$axios.get(`courses/${this.pageId}/competences`);
@@ -518,6 +526,7 @@ import { Configuration, OpenAIApi } from "openai";
           console.log('COMPETENCES----->', this.competences);
           this.topics = topicsData.data;
           console.log('TOPICS----->', this.topics);
+          this.loadingView = false;
         } catch (error) {
           
         }

@@ -184,7 +184,7 @@
         <v-card-actions>
           <v-row>
             <v-col cols="12" class="pb-0">
-              <v-btn @click="register" block color="#0b2ac4" dark elevation="0"  class="mb-2">
+              <v-btn @click="register" :loading="loadingPost" block color="#0b2ac4" dark elevation="0"  class="mb-2">
                 REGISTRAR
               </v-btn>
               <v-btn block text @click="pushToHome">
@@ -228,6 +228,7 @@
       return {
         user: new UserRegister('', '', '', '', '', '', '', '', '', []),
         showResult: false,
+        loadingPost: false,
         message: '',
         successful: false,
         typeInput: false,
@@ -286,14 +287,16 @@
 
         if (!valid) {
           this.user.role.push('principal');
+          this.loadingPost = true;
 
           await this.$store.dispatch('auth/register', this.user).then(
-              async data => {
-                this.message = data.message;
+            async data => {
+              this.message = data.message;
                 this.successful = true;
                 this.showResult = true;
 
                 await this.$refs.form.reset();
+                this.loadingPost = false;
 
                 setTimeout(() => {
                   this.$router.push('/').catch(()=>{});
