@@ -527,11 +527,13 @@ import { Configuration, OpenAIApi } from "openai";
         this.isActive = true;
         this.selectIdTopic = sampleId;
 
+        // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
         const configuration = new Configuration({
-            organization: "",
-            apiKey: '',
+            organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
+            apiKey: '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',
         });
         const openai = new OpenAIApi(configuration);
+          // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
 
         
         const promptAll = `Del tema propuesto genera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_number\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n] \n\n TEMA00\${this.id}:{${this.topics[i].file}}`;

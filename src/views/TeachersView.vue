@@ -1,5 +1,6 @@
 <template>
-    <crud-custom title-crud="Profesores" hide-edit hide-delete max-title :end-point="endPoint" createEp="auth/signup" name-crud="Profesor" icon="mdi-account-group" :entity-property="entityProperty" title-card="speciality" :headers="header" ref="crud">
+    <div>
+    <crud-custom title-crud="Profesores" hide-edit hide-delete max-title :end-point="endPoint" createEp="auth/signup" name-crud="Profesor" icon="mdi-account-group" :entity-property="entityProperty" title-card="speciality" :headers="header" ref="crud" @detalle="onDetalle">
       <template #form>
           <v-text-field @focus="setUser" dense required :rules="lastNameRules" label="Nombre y Apellidos" hide-details outlined class="mb-3" @blur="setNameEspeciality" v-model="entityProperty.first_name"></v-text-field>                    
           <v-text-field dense required :rules="lastNameRules" label="Email" hide-details outlined class="mb-3" v-model="entityProperty.email" @blur="createUsername"></v-text-field>                    
@@ -24,25 +25,95 @@
         </v-card>
       </template>
     </crud-custom>
+    <v-dialog persistent width="700" v-model="dialogAsign">
+      <v-card>
+        <v-card-title style="color: white; background-color: #081d87;">Asignación Docente</v-card-title>
+        <div class="pa-8 px-8">
+          <v-skeleton-loader
+            v-if="loadingCard"
+            :loading="loadingCard"
+            type="article, actions"
+          ></v-skeleton-loader>
+          <card-custom v-if="!loadingCard" cancel-hover hide-delete hide-edit hide-detail title="Datos personales" :headers="headerCard" :item="itemTeacher">
+
+          </card-custom>
+          <v-form v-if="!loadingCard">
+            <v-select
+              :items="updateCourses"
+              outlined
+              hide-details
+              dense
+              label="Cursos"
+              class="mt-3"
+            ></v-select>
+            <v-select
+              :items="updateGrades"
+              outlined
+              hide-details
+              dense
+              label="Grados"
+              class="mt-3"
+            ></v-select>
+          </v-form>
+
+        </div>
+        <v-card-actions v-if="!loadingCard">
+          <v-spacer></v-spacer>
+          <v-btn
+            :disabled="laodingAsign"
+            color="red"
+            text
+            @click="() => {dialogAsign = false}"
+          >
+            CERRAR
+          </v-btn>
+          <v-btn
+            :loading="laodingAsign"
+            color="#081d87"
+            text
+            @click="asignTeacher"
+          >
+            ASIGNAR
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    </div>
 </template>
 
 <script>
 import CrudCustom from '@/components/CrudCustom.vue'
-
+import CardCustom from '@/components/CardCustom.vue'
 
 export default {
   name: 'ComunicadosCustom',
 
   components:{
     CrudCustom,
+    CardCustom,
   },
 
   data: () => ({
     dataComunicados: false,
+    laodingAsign: false,
     typeInput: false,
+    items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+    dialogAsign: false,
+    loadingCard: false,
+    coursesList: [],
+    gradesList: [],
+    itemTeacher: {},
     header: [
       { text: "ID Docente", value: "userId" },
       { text: "Salario", value: "salary" },
+    ],
+    headerCard: [
+      { text: "Nombre Completo", value: "first_name" },
+      { text: "Username", value: "username" },
+      { text: "Email", value: "email" },
+      { text: "Institución Educativa", value: "last_name" },
+      { text: "Celular", value: "phone" },
     ],
     entityProperty:{
       username: '',
@@ -77,9 +148,54 @@ export default {
     endPoint(){
       return `principals/${this.currentUserData.id}/teachers`;
     },
+    updateCourses(){
+      return this.coursesList.map(curso => curso.name);
+    },
+    updateGrades(){
+      return this.gradesList.map(curso => curso.name);
+    }
   },
 
   methods: {
+    async onDetalle(item){
+      this.dialogAsign = true;
+      this.loadingCard = true;
+      try {
+        const {data} = await this.$axios.get(`users/${item.userId}`);
+        // console.log('INFORMATION', item);
+        // console.log('INFORMATION', data);
+        this.loadingCard = false;
+        this.itemTeacher = {...data};
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async asignTeacher(){
+      this.laodingAsign = true;
+      try {
+        // await this.$axios.post(`users/${item.userId}`);
+        this.dialogAsign = false;
+        this.laodingAsign = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async initCourses(){
+      try {
+        const {data} = await this.$axios.get(`courses`);
+        this.coursesList = data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async initGrades(){
+      try {
+        const {data} = await this.$axios.get(`grades`);
+        this.gradesList = data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     createUsername() {
       const username = this.entityProperty.email.substring(0, this.entityProperty.email.indexOf('@'));
       this.entityProperty.username = username;
@@ -99,6 +215,8 @@ export default {
   },
 
   async created(){
+    this.initCourses();
+    this.initGrades();
   }
 }
 </script>
