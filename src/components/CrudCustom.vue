@@ -25,7 +25,21 @@
         </div>
       </v-card>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${!oneColumn?'1fr':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
+        <div v-if="loading">
+          <v-skeleton-loader
+            v-for="(item, index) in 3" :key="index"
+            type="list-item-three-line, actions"
+            class="mb-3"
+          ></v-skeleton-loader>
+        </div>
+        <div v-if="loading">
+          <v-skeleton-loader
+            v-for="(item, index) in 3" :key="index"
+            type="list-item-three-line, actions"
+            class="mb-3"
+          ></v-skeleton-loader>
+        </div>
+        <card-custom v-else v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
           
           <template #leftBottom>
             <slot name="leftBottom">

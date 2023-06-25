@@ -10,7 +10,13 @@
   <div class="d-flex justify-center">
     <v-card color="#eeeeee" elevation="0" style="width: 100%;">
       <div class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" style="background-color: #081d87;">
-        <v-icon size="30" color="#ffffff" class="mr-3">mdi-flag-checkered</v-icon> <h2>{{entityProp.name}}</h2>
+        <v-icon size="30" color="#ffffff" class="mr-3">mdi-flag-checkered</v-icon> 
+          <v-progress-circular
+            v-if="loadingView"
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+          <h2 v-else >{{entityProp.name}}</h2>
         <v-spacer></v-spacer>
 
         <div>
@@ -22,13 +28,25 @@
         </div>
       </div>
       <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-text-box</v-icon> <h2 class="py-3">Descripción</h2></div>
-      <v-card class="pa-5" elevation="0" outlined>
+      <v-skeleton-loader
+        v-if="loadingView"
+          type="list-item-three-line"
+        ></v-skeleton-loader>
+      <v-card v-else class="pa-5" elevation="0" outlined>
         <p class="ma-0 text-justify">{{entityProp.description}}</p>
 
       </v-card>
       <div class="d-flex pl-3 mt-5 align-center"><v-icon size="30" color="#081d87" class="mr-3">mdi-tooltip-check</v-icon> <h2 class="py-3">Temas</h2> <v-spacer></v-spacer>
         <v-btn color="#081d87" class="mr-4 elevation-0" dark @click="openAdd"> <v-icon class="mr-2">mdi-plus</v-icon>AGREGAR</v-btn></div>
-      <v-expansion-panels class="elevation-0">
+        <div v-if="loadingView">
+        <v-skeleton-loader
+        v-for="(item, index) in 3" :key="index"
+          type="list-item-three-line, actions"
+          class="mb-3"
+        ></v-skeleton-loader>
+
+        </div>
+      <v-expansion-panels v-else class="elevation-0">
       <v-expansion-panel
       class="elevation-0"
         v-for="(item,i) in topics"

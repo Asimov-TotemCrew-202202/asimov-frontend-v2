@@ -92,17 +92,17 @@
       dataFinal: '',
       comunicados: [],
       series: [{
-        name: 'TEAM A',
+        name: '2021',
         type: 'column',
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+        data: [ 6, 5, 6, 10, 4, 2, 8, 1, 6]
       }, {
-        name: 'TEAM B',
+        name: '2022',
         type: 'area',
-        data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
+        data: [ 2, 6, 8, 1, 7, 10, 4, 3, 5]
       }, {
-        name: 'TEAM C',
+        name: '2023',
         type: 'line',
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
+        data: [ 2, 1, 4, 9, 8, 5, 7, 9, 2]
       }],
       chartOptions: {
         chart: {
@@ -131,18 +131,22 @@
             stops: [0, 100, 100, 100]
           }
         },
-        labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003',
-          '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'
+        labels: [ '03/01', '04/01', '05/01', '06/01', '07/01',
+          '08/01', '09/01', '10/01', '11/01'
         ],
         markers: {
           size: 0
         },
+        dataLabels: {
+          enabled: false
+        },
+        colors: ["#051252", "#2357f6", "#0b2ac4"],
         xaxis: {
           type: 'datetime'
         },
         yaxis: {
           title: {
-            text: 'Points',
+            text: 'Cursos completos',
           },
           min: 0
         },
@@ -152,7 +156,7 @@
           y: {
             formatter: function (y) {
               if (typeof y !== "undefined") {
-                return y.toFixed(0) + " points";
+                return y.toFixed(0) + " cursos completos";
               }
               return y;
             
