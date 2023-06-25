@@ -528,8 +528,8 @@ import { Configuration, OpenAIApi } from "openai";
         this.selectIdTopic = sampleId;
 
         const configuration = new Configuration({
-            organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
-            apiKey: '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',
+            organization: "",
+            apiKey: '',
         });
         const openai = new OpenAIApi(configuration);
 

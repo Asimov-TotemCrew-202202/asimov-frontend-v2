@@ -13,6 +13,8 @@
         <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
         <div>
+          <slot name="leftBottomHeader">
+          </slot>
           <v-btn v-if="!hideAdd" dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
             <v-icon>mdi-plus</v-icon> AÑADIR 
           </v-btn>
