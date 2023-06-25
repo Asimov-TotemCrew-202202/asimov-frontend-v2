@@ -28,16 +28,25 @@
         v-for="(item,i) in topics"
         :key="i"
       >
-        <v-expansion-panel-header class="font-weight-bold text-uppercase">SEMANA {{ (i+1).toString().padStart(2, '0') }} - TEMA {{ item.title }}</v-expansion-panel-header>
+        <v-expansion-panel-header class="font-weight-bold text-uppercase">SEMANA {{ (i+1).toString().padStart(2, '0') }} - TEMA {{ item.title }}
+          <div class="d-flex justify-end">
+            <v-btn v-if="item.status==true" class="mr-5 elevation-0" color="success"  plain text-color="#ffffff">
+              <v-icon left>
+                mdi-check-decagram
+              </v-icon>
+              COMPLETADO
+            </v-btn>
+          </div>
+        </v-expansion-panel-header>
         <v-expansion-panel-content>
           <p class="text-justify">
             {{ item.description }}
           </p>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn elevation="0" color="warning" class="mr-3" @click="openInfo(i)"> <v-icon class="mr-3">mdi-eye</v-icon> VER INFORMACIÓN</v-btn>
-            <v-btn v-if="!currentUserDirector" :disabled="item.status==true" @click="completeTopic(item.id)" color="success" elevation="0" class="mr-3 ml-0"> <v-icon class="mr-3">mdi-check-decagram</v-icon>COMPLETAR</v-btn>
-            <div v-if="!currentUserDirector" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i, item.id)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
+            <v-btn elevation="0" color="warning" class="" @click="openInfo(i)" :class="item.status!=true? 'mr-2':''"> <v-icon class="mr-3">mdi-eye</v-icon>VER INFO</v-btn>
+            <v-btn elevation="0" v-if="item.status==true" color="purple" dark class="mr-2" :loading="loadingExamView" @click="openExam(item.id)"> <v-icon class="mr-3">mdi-file</v-icon>EVALUACIÓN</v-btn>
+            <div v-if="!currentUserDirector && item.status!=true" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i, item.id)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -72,14 +81,14 @@
             text
             @click="dialog = false"
           >
-            CANCEL
+            CERRAR
           </v-btn>
           <v-btn
             color="#081d87"
             text
             @click="dialog = false"
           >
-            CREATE
+            REGISTRAR
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -172,8 +181,9 @@
         </v-card-title>
 
         <v-form class="pa-6">
+          <v-file-input v-model="archivo" @change="leerArchivo" dense hide-details outlined label="Seleccionar archivo" class="mb-3"></v-file-input>
           <v-text-field v-model="entityProperty.title" dense label="Titulo" hide-details outlined class="mb-3"></v-text-field>
-          <v-text-field v-model="entityProperty.description" dense label="Descripción" hide-details outlined class="mb-3"></v-text-field>
+          <v-text-field v-model="entityProperty.description" counter="25" :rules="rules" dense label="Descripción" outlined></v-text-field>
           <v-textarea
             clearable
             outlined
@@ -192,7 +202,7 @@
           <v-btn
             color="red"
             text
-            @click="dialogAdd = false"
+            @click="cancelDialog"
           >
             CERRAR
           </v-btn>
@@ -215,7 +225,7 @@
     >
       <v-card>
         <v-card-title class="" style="color: white; background-color: #081d87;">
-          EVALUACIÓN
+          Evaluación generada
         </v-card-title>
 
         
@@ -224,7 +234,7 @@
         <v-card-text class="mt-5">
           <v-card v-for="(item, index) in repuestas" :key="index" outlined class="pa-3 mb-2">
             <p class="mb-3 font-weight-bold">{{item.question}}</p>  
-            <p v-for="(option, i) in item.options" :key="i" class="my-0 font-weight-light">{{i +') '}} {{option}}</p>  
+            <p v-for="(option, i) in item.options" :key="i" class="my-0 font-weight-light" :class="item.correct_option_number == (i+1) ?'font-weight-bold':''"> {{letters[i]}} {{option}}</p>  
           </v-card>
           
         </v-card-text>
@@ -241,6 +251,7 @@
             CANCELAR
           </v-btn>
           <v-btn
+            v-if="!showExam"
             :loading="examLoading"
             color="#081d87"
             text
@@ -322,13 +333,17 @@ import { Configuration, OpenAIApi } from "openai";
 
     data: () => ({
       textError: '',
+      archivo: null,
       colorSnak: '',
       examLoading: false,
+      loadingExamView: false,
+      showExam: false,
       snackbar: false,
       dialogCompetence: false,
       dialogAdd: false,
       selectIdTopic: '',
       competences: null,
+      letters: ['A)', 'B)', 'C)'],
       topics: [],
       entityProp: {},
       dialog: false,
@@ -341,6 +356,7 @@ import { Configuration, OpenAIApi } from "openai";
       info: null,
       infoModel: false,
       competencia: {},
+      rules: [v => v.length <= 25 || 'Max 25 caracteres'],
       
       entityProperty: {
         title: "",
@@ -383,6 +399,27 @@ import { Configuration, OpenAIApi } from "openai";
       
     },
     methods:{
+      cancelDialog(){
+        this.archivo = null,
+        this.entityProperty= {
+          title: "",
+          description: "",
+          file: "",
+        },
+        this.dialogAdd = false;
+      },
+      leerArchivo() {
+       if (this.archivo) {
+         const lector = new FileReader();
+         lector.onload = (e) => {
+           const contenido = e.target.result;
+           console.log(contenido); // Hacer algo con el contenido del archivo
+            this.entityProperty.file = contenido;
+         };
+         lector.readAsText(this.archivo);
+         this.entityProperty.title = this.archivo.name.replace(/\.txt$/, "");
+       }
+      },
       openInfo(i){
         this.infoModel = !this.infoModel;
         if (i==-1) {
@@ -409,12 +446,19 @@ import { Configuration, OpenAIApi } from "openai";
         try {
           await this.$axios.post(`courses/${this.pageId}/topics`,this.entityProperty);
           this.initData();
-          this.entityProperty= {
-            title: "",
-            description: "",
-            file: "",
-          };
-          this.dialogAdd=false;
+          this.cancelDialog();
+        } catch (error) {
+          
+        }
+      },
+      async openExam(id){
+        this.loadingExamView = true;          
+        try {
+          const {data} = await this.$axios.get(`topics/${id}/exams`);
+          this.loadingExamView = false;          
+          this.repuestas = data.examDetailResources;
+          this.evaDialog = true;          
+          this.showExam = true;          
         } catch (error) {
           
         }
@@ -424,7 +468,7 @@ import { Configuration, OpenAIApi } from "openai";
           this.entityExams.examDetailResources.push({
             question: this.repuestas[index].question,
             options: [ ...this.repuestas[index].options ],
-            correctOptionOrder: this.repuestas[index].correct_option_order,
+            correctOptionOrder: this.repuestas[index].correct_option_number,
           })
         }
         this.examLoading = true;
@@ -434,7 +478,9 @@ import { Configuration, OpenAIApi } from "openai";
           this.snackbar = true;
           this.textError = 'Se registro evaluacion exitosamente!';
           this.evaDialog = false; 
+          this.showExam = false; 
           this.examLoading = false;
+          this.completeTopic(this.selectIdTopic);
         } catch (error) {
           this.colorSnak='red';
           this.textError = 'Evaluación existente';
@@ -483,15 +529,15 @@ import { Configuration, OpenAIApi } from "openai";
 
         const configuration = new Configuration({
             organization: "org-MmTLnZee5rxzCH2ifY7OaDHr",
-            apiKey: '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',
+            apiKey: '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',
         });
         const openai = new OpenAIApi(configuration);
 
         
-        const promptAll = `Eres un profesor de una institucion educativa, analiza el siguiente TEMA00\${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00\${this.id}:{${this.topics[i].file}}\n\nGenera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_order\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]`;
+        const promptAll = `Del tema propuesto genera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_number\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n] \n\n TEMA00\${this.id}:{${this.topics[i].file}}`;
         const promptFinal = promptAll.toString();
 
-        const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_order\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
+        const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_number\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
         
         const response = await openai.createCompletion({
           model: "text-davinci-003",
@@ -505,6 +551,7 @@ import { Configuration, OpenAIApi } from "openai";
           this.repuestas = JSON.parse(response.data.choices[0].text.trim());
           this.evaDialog = true;          
           this.overlay = false;
+          this.showExam = false;
           this.isActive = false;          
 
           
@@ -512,7 +559,8 @@ import { Configuration, OpenAIApi } from "openai";
           this.overlay = false;
           this.isActive = false;          
           this.snackbar = true; 
-          this.textError = error;
+          this.colorSnak = 'red'; 
+          this.textError = 'Error en sintaxis de examen!';
           this.evaDialog = false;          
         }
 

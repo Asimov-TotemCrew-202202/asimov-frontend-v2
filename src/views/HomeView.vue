@@ -28,9 +28,9 @@
 
 
             <v-card outlined class="mb-2 font-weight-bold">
-              <v-card-title class="d-flex justify-space-between px-4 pb-0">
+              <v-card-title class="d-flex justify-space-between px-4 pb-0 font-weight-bold">
                 <span>Progreso Año Escolar</span>
-                <span class="font-weight-bold">{{currentPercent}}%</span>
+                <span class="">{{currentPercent}}%</span>
               </v-card-title>
               <v-card-title class="d-flex justify-space-between px-4 pt-0 pb-2">
                 <span>Inicia:{{ dateInici }}</span>
