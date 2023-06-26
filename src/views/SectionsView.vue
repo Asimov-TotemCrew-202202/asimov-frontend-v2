@@ -1,0 +1,181 @@
+<template>
+    <crud-custom title-crud="Secciones" ref="crud" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Sección" icon="mdi-book" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
+      <template #form>
+        <v-text-field dense label="Name" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
+      </template>
+      <template #leftBottomHeader>
+        <v-select
+            style="display: inline-flex; width: 150px;"
+            height="36"
+            :items="grades"
+            item-text="name"
+            item-value="id"
+            v-model="gradeSelected"
+            @change="reloadCrud"
+            dense small
+            dark color="white" 
+            class="mr-3" 
+            outlined 
+            elevation="0"
+            :rules="[v => !!v || 'Item is required']"
+            hide-details
+            required
+        ></v-select>
+      </template>
+      <template #rightColumn>
+        <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-information</v-icon> <h2 class="py-3">Información</h2></div>
+        <v-card outlined class="pa-3">
+            Agrupa a tus alumnos en secciones. Estas divisiones te ayudaran a organizar y administrar de manera eficiente el proceso de enseñanza y aprendizaje.
+        </v-card>
+        <v-alert
+          :value="dataComunicados"
+          color="blue-grey"
+          dark
+          border="top"
+          icon="mdi-message-alert-outline"
+          transition="scale-transition"
+          class="mt-3"
+        >
+          <span class="font-weight-bold">{{itemComu.name }}</span>
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+
+          {{itemComu.description }}
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+          <v-row>
+            <v-spacer style="color: white"></v-spacer>
+            <v-btn
+              class="mr-3 my-2"
+              color="white"
+              outlined
+              @click="dataComunicados= !dataComunicados"
+            >
+              CERRAR
+            </v-btn>
+          </v-row>
+        </v-alert>
+        <!-- <div v-if="dataComunicados" class="d-flex pl-3 mt-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-file-document</v-icon> <h2 class="py-3">Contenido</h2></div>
+        <v-card v-if="dataComunicados" outlined class="pa-3">
+          <v-card-title class="pa-0">{{itemComu.name }}</v-card-title>
+          {{itemComu.description }}
+        </v-card> -->
+      </template>
+    </crud-custom>
+</template>
+
+<script>
+import CrudCustom from '@/components/CrudCustom.vue'
+import axios from 'axios';
+
+
+export default {
+  name: 'ComunicadosCustom',
+
+  components:{
+    CrudCustom,
+  },
+
+  data: () => ({
+    itemComu: {},
+    dataComunicados: false,
+    header: [
+        { text: "Name", value: "name" },
+    ],
+    entityProperty:{
+      name: '',
+    },
+    grades: [],
+    gradeSelected: {
+        id: 1,
+        name: ''
+    },
+  }),
+
+  watch:{
+  },
+
+  computed:{
+    endPoint(){
+      return `grades/${this.gradeSelected.id}/sections`;
+    },
+  },
+
+  methods: {
+    onDetalle(item){
+      this.dataComunicados = true;
+      this.itemComu= {
+        ...item
+      };
+    },
+    changeGradeSelected() {
+        const grade = this.grades.find(grade => grade.name === this.gradeSelected) 
+        this.gradeSelectedId = grade.id;
+
+        console.log(this.gradeSelectedId);
+    },
+    reloadCrud(item) {
+        console.log(item);
+        this.$refs.crud.getData();
+    }
+
+  },
+
+  mounted(){
+    axios.get(`http://localhost:8080/api/v1/grades`)
+        .then(response => {
+            this.grades = response.data;
+            // this.gradeSelected = this.grades[0];
+        })
+  },
+
+  created(){
+  }
+}
+</script>
+
+<style scoped>
+.v-application .info{
+  background-color: white !important;
+  border-color: white !important;
+}
+
+/* .myselect {
+    display: inline-flex;
+    height: 36px; 
+    border: 1px solid white; 
+    border-radius: 4px; 
+    width: 150px; 
+    margin-right: 12px; 
+    padding-left: 12px; 
+    color: white;
+}
+
+.myselect:focus {
+    outline: none;
+}
+
+.myselect:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.myselect option {
+  background-color: white;
+  margin: 10px;
+  color: #333;
+}
+
+.myselect option:hover {
+  background-color: #e6e6e6;
+} */
+
+/* .myselect option:selected {
+  background-color: white;
+  color: #fff;
+} */
+
+</style>

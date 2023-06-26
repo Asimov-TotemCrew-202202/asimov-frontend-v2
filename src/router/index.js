@@ -81,6 +81,15 @@ const routes = [
       requiresAuth: true,
       layout: () => import('../layouts/DefaultLayaout.vue')
     },
+  },
+  {
+    path: '/sections',
+    name: 'sections',
+    component: () => import('../views/SectionsView.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    }
   }
 ]
 
