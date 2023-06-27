@@ -16,11 +16,15 @@
           <slot name="leftBottomHeader">
           </slot>
           <v-btn v-if="!hideAdd" dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
-            <v-icon>mdi-plus</v-icon> AÑADIR 
+            <v-icon small class="mr-2">mdi-plus</v-icon> AÑADIR 
           </v-btn>
+          <slot name="centralBottomHeader">
+          </slot>
           <v-btn dark color="white" class="" :loading="loadingCrud" @click="getData" outlined elevation="0">
-            <v-icon>mdi-sync</v-icon> RECARGAR
+            <v-icon small class="mr-2">mdi-sync</v-icon> RECARGAR
           </v-btn>
+          <slot name="rightBottomHeader">
+          </slot>
 
         </div>
       </v-card>
