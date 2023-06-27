@@ -3,16 +3,20 @@
     <div class="leftColumn" style="width: 100%; height: 100%;">
       <div class="leftColumn__buttons">
         <div>
-          <v-card  dark class="pa-5 rounded-lg" color="#051252" elevation="0">
+          <v-card  dark class="pa-4 rounded-lg" color="#051252" elevation="0">
             <v-card-title class="font-weight-black"> <v-icon class="mr-2">mdi-school</v-icon>ASIMOV</v-card-title>
-            <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-2">
-              <div class="font-weight-bold">INSTITUCION:</div>
-              <div class="font-weight-regular">LOS ROSALES</div>
+            <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-1">
+              <div class="font-weight-bold">INSTITUCIÓN:</div>
+              <div class="font-weight-regular">{{currentUser.last_name}}</div>
             </div>
-            <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-4">
+            <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-1">
               <div class="font-weight-bold">USUARIO:</div>
               <v-spacer></v-spacer>
-              <div class="font-weight-regular">DOCENTE</div>
+              <div class="font-weight-regular">{{currentUserRole}}</div>
+            </div>
+            <div class="d-flex justify-lg-space-between flex-sm-wrap px-4 pb-4">
+              <div class="font-weight-bold">NOMBRE:</div>
+              <div class="font-weight-regular">{{currentUser.first_name}}</div>
             </div>
           </v-card>
   
@@ -28,7 +32,7 @@
                 :color="modelSize? 'red' : '#081d87'"
               >
                 <v-list-item
-                  v-for="(item, i) in items"
+                  v-for="(item, i) in filteredItems"
                   :key="i"
                   :disabled="i==model"
                   :style="i!=0?`border-top: 2px solid #eeeeee;`:''"
@@ -100,6 +104,11 @@
           route: 'profesores',
         },
         {
+          icon: 'mdi-book',
+          text: 'Secciones',
+          route: 'sections',
+        },
+        {
           icon: 'mdi-account',
           text: 'Profile',
           route: 'profile',
@@ -109,6 +118,29 @@
       modelSize: null,
     }),
     computed:{
+      currentUserRole() {
+        let roleUser = this.$store.state.auth.user.roles;
+        if (roleUser.includes('ROLE_PRINCIPAL')) {
+          return 'DIRECTOR';
+        }else{
+          return 'DOCENTE';
+        }
+      },
+      currentUser() {
+        return this.$store.state.auth.user;
+      },
+      currentUserDirector() {
+        let roleUser = this.$store.state.auth.user.roles;
+        return roleUser.includes('ROLE_PRINCIPAL');
+      },
+      filteredItems() {
+        if (this.currentUserDirector) {
+          return this.items;
+        } else {
+          return this.items.filter(item => item.route !== 'sections' && item.route !== 'profesores');
+        }
+      },
+      
     },
     mounted() {
       let passive = { passive: true };
@@ -123,10 +155,11 @@
         return item.route === param;
       });
 
-      // console.log(`this.model ${this.model} ---> ${index}`);
-
       this.model = index;
       
+      // if (!this.currentUserDirector) {
+      //   this.items.splice(this.items.length - 2, 2);
+      // }
     },
     methods:{
       onResize() {
@@ -136,8 +169,6 @@
         this.modelSize = is;
       },
       pushName(name){
-        // let param = window.location.pathname;
-        // param = param.split("/")[1]
         
         var index = this.items.findIndex(function(item) {
           return item.route === name.route;
@@ -167,7 +198,6 @@
   grid-template-rows: 100%;
   .leftColumn,
   .centerColumn{
-    // padding: 20px;
     border-radius: 8px;
   }
 

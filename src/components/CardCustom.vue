@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="0" outlined class="card-course rounded-lg" @mouseover="showIcon" @mouseleave="hideIcon">
+  <v-card elevation="0" outlined class="rounded-lg" :class="!cancelHover?'card-course':''" @mouseover="showIcon" @mouseleave="hideIcon">
     <v-card-title class="font-weight-bold text-uppercase" > <span class="d-inline-block text-truncate" :style="`max-width: ${maxTitle?'950px':'350px'};`">{{Title}}</span>  <v-spacer></v-spacer>
       <div v-if="showHoverIcon">
         <slot name="leftBottom"></slot>
@@ -49,6 +49,10 @@
         required: false,
       },
       hideEdit: {
+        type: Boolean,
+        required: false,
+      },
+      cancelHover: {
         type: Boolean,
         required: false,
       },

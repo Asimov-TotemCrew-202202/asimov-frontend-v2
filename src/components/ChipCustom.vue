@@ -1,6 +1,6 @@
 <template>
   <v-chip class="" :color="showHoverIcon?'#081d87':''" label :text-color="showHoverIcon?'#ffffff':''" @mouseover="showIcon" @mouseleave="hideIcon" @click="click">
-    <v-icon v-if="showHoverIcon" left>
+    <v-icon v-if="showHoverIcon" small left>
       mdi-label
     </v-icon>
     {{text}}

@@ -6,10 +6,6 @@
                     <v-icon size="30" color="#ffffff" class="mr-3">mdi-account</v-icon> 
                     <h2>Profile</h2>
                 </div>
-                <v-spacer></v-spacer>
-                <v-btn @click="openDialog" dark color="white" outlined elevation="0">
-                    <v-icon class="mr-2">mdi-pen</v-icon>EDITAR
-                </v-btn>
             </div>
 
             <div>
@@ -18,16 +14,16 @@
                     <v-col>
                         <v-card outlined class="pa-5">
                                 <div>
-                                    <h3>Name</h3>
-                                    <p>{{ currentUser.first_name }} {{ currentUser.last_name }}</p>
+                                    <h3>FullName</h3>
+                                    <p>{{ currentUser.first_name }}</p>
                                 </div>
                                 <div>
-                                    <h3>Age</h3>
-                                    <p>54 años</p>
+                                    <h3>Educative Institution</h3>
+                                    <p>{{ currentUser.last_name }}</p>
                                 </div>
                                 <div>
                                     <h3>Cellphone</h3>
-                                    <p class="ma-0">+51 {{ currentUser.phone }}</p>
+                                    <p class="ma-0">{{ currentUser.phone }}</p>
                                 </div>
                         </v-card>
                     </v-col>
@@ -38,6 +34,10 @@
                 <v-row>
                     <v-col>
                         <v-card outlined class="pa-5">
+                                <div class="pb-4">
+                                    <h3>Username</h3>
+                                    <span>{{ currentUser.username }}</span>
+                                </div>
                                 <div class="pb-4">
                                     <h3>Email</h3>
                                     <span>{{ currentUser.email }}</span>
@@ -92,7 +92,12 @@
         </v-card>
         <div style="width: 100%; border-radius: 8px;">
             <v-card outlined class="pa-5 d-flex justify-center align-center">
-                <v-img src="https://i.ibb.co/nsRbH6p/cuanto-gana-un-profesor-en-colombia-asi-funciona-el-escalafon-docente.jpg" aspect-ratio="0.75" position="18%"></v-img>
+                <v-img 
+                    v-if="isDirector" 
+                    src="https://sanjuanboscosalamanca.salesianas.org/wp-content/uploads/2019/01/Jes%C3%BAs-M%C2%AA-Calvo-Macho-Director-General.jpg" 
+                    aspect-ratio="0.75" 
+                    position="center"></v-img>
+                <v-img v-else src="https://grupogeard.com/pe/wp-content/uploads/sites/4/2021/11/Escala-docente-peru.jpg" aspect-ratio="0.75" position="18%"></v-img>
             </v-card>
         </div>
     </div>
@@ -108,6 +113,9 @@
         computed: {
             currentUser() {
                 return this.$store.state.auth.user;
+            },
+            isDirector() {
+                return this.$store.state.auth.user.roles[0] === 'ROLE_PRINCIPAL'? true : false;
             }
         },
         methods:{ 

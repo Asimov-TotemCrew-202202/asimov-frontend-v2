@@ -1,5 +1,5 @@
 <template>
-  <div style="display: grid; grid-template-columns: 80% 20%; grid-template-rows: 1fr; gap: 10px;">
+  <div style="display: grid; grid-template-columns: 75% 25%; grid-template-rows: 1fr; gap: 10px;">
     <v-overlay :value="loading">
       <v-progress-circular
         indeterminate
@@ -10,20 +10,46 @@
   <div style="width: 100%;">
     <v-card color="#eeeeee" elevation="0">
       <v-card class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" elevation="0" style="background-color: #081d87;">
-        <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
+        <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> 
+        <v-progress-circular
+            v-if="loading"
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+        <h2 v-else>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
-        <div>
-          <v-btn dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
-            <v-icon>mdi-plus</v-icon> AÑADIR 
+        <div style="display: flex; max-height: 36px; align-items: center;">
+          <slot name="leftBottomHeader">
+          </slot>
+          <v-btn v-if="!hideAdd" dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
+            <v-icon small class="mr-2">mdi-plus</v-icon> AÑADIR 
           </v-btn>
+          <slot name="centralBottomHeader">
+          </slot>
           <v-btn dark color="white" class="" :loading="loadingCrud" @click="getData" outlined elevation="0">
-            <v-icon>mdi-sync</v-icon> RECARGAR
+            <v-icon small class="mr-2">mdi-sync</v-icon> RECARGAR
           </v-btn>
+          <slot name="rightBottomHeader">
+          </slot>
 
         </div>
       </v-card>
       <div class="displayCourses" :style="`grid-template-columns: 1fr ${!oneColumn?'1fr':''};`">
-        <card-custom v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item.id)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
+        <div v-if="loading">
+          <v-skeleton-loader
+            v-for="(item, index) in 3" :key="index"
+            type="list-item-three-line, actions"
+            class="mb-3"
+          ></v-skeleton-loader>
+        </div>
+        <div v-if="loading">
+          <v-skeleton-loader
+            v-for="(item, index) in 3" :key="index"
+            type="list-item-three-line, actions"
+            class="mb-3"
+          ></v-skeleton-loader>
+        </div>
+        <card-custom v-else v-for="(item, index) in data" :key="index" :title="`${item[titleCard]}`" :headers="headers" :item="item" @detalle="logDetalle(item)" @edit="setItem(item.id)" @delete="deleteItem(item.id)" :hide-edit="hideEdit" :hide-delete="hideDelete" :hide-detail="hideDetail" :max-title="maxTitle">
           
           <template #leftBottom>
             <slot name="leftBottom">
@@ -131,6 +157,10 @@ import CardCustom from '@/components/CardCustom.vue'
         type: Boolean,
         default: false,
       },
+      hideAdd: {
+        type: Boolean,
+        default: false,
+      },
       hideDetail: {
         type: Boolean,
         default: false,
@@ -146,6 +176,10 @@ import CardCustom from '@/components/CardCustom.vue'
       entityProperty: {
         type: Object,
         required: true,
+      },
+      createEp: {
+        type: String,
+        default: '',
       },
     },
     
@@ -186,11 +220,8 @@ import CardCustom from '@/components/CardCustom.vue'
       }
     },
     methods:{
-      logDetalle(id){
-        this.$router.push({
-          name: `${this.endPoint}-detail`,
-          params: { id },
-        });
+      logDetalle(item){
+        this.$emit('detalle', item);
       },
       cleanProperty(objeto){
         for (let propiedad in objeto) {
@@ -200,14 +231,14 @@ import CardCustom from '@/components/CardCustom.vue'
       addItem(){
         this.dialog = true;
         this.onEdit = false;
-        this.$emit('edit', false);
+        this.$emit('add');
 
         this.cleanProperty(this.entityProperty);        
       },
       addEditItem(){
         this.loadingAddEdit = true;
         console.log('SAMPLE--->', this.entityProperty);
-        this.$axios[this.onEdit? 'put':'post'](`${this.customPut && this.onEdit ? this.customEndPoint :this.endPoint}${this.onEdit?('/'+this.dataId):''}`, this.entityProperty)
+        this.$axios[this.onEdit? 'put':'post'](`${this.customPut && this.onEdit ? this.customEndPoint :this.createEp != ''? this.createEp: this.endPoint}${this.onEdit?('/'+this.dataId):''}`, this.entityProperty)
         .then(response => {
           console.log('STATUS ----> ', response.status);
           this.cleanProperty(this.entityProperty);
