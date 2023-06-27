@@ -12,7 +12,7 @@
       <v-card class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" elevation="0" style="background-color: #081d87;">
         <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
-        <div>
+        <div style="display: flex; max-height: 36px; align-items: center;">
           <slot name="leftBottomHeader">
           </slot>
           <v-btn v-if="!hideAdd" dark color="white" class="mr-3 text-uppercase" outlined elevation="0" @click="addItem">
