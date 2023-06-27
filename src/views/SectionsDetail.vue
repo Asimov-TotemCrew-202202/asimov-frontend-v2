@@ -1,8 +1,13 @@
 <template>
-    <crud-custom title-crud="Competencias" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Competencia" icon="mdi-check-decagram" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
+    <crud-custom :title-crud="sectionName" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Competencia" icon="mdi-book" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
       <template #form>
         <v-text-field dense label="Titulo" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
         <v-textarea rows="4" dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description"></v-textarea>
+      </template>
+      <template #leftBottomHeader>
+        <v-btn dark color="white" class="mr-3" @click="backPage" outlined elevation="0">
+            <v-icon class="mr-2">mdi-arrow-left</v-icon>REGRESAR
+          </v-btn>
       </template>
       <template #rightColumn>
         <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-information</v-icon> <h2 class="py-3">Información</h2></div>
@@ -52,6 +57,7 @@
 
 <script>
 import CrudCustom from '@/components/CrudCustom.vue'
+import axios from 'axios';
 
 
 export default {
@@ -71,6 +77,11 @@ export default {
       name: '',
       description: '',
     },
+    section: {
+      id: 0,
+      name: "",
+      gradeId: 0
+    }
   }),
 
   watch:{
@@ -79,6 +90,12 @@ export default {
   computed:{
     endPoint(){
       return `competences`;
+    },
+    pageId() {
+      return this.$route.params.id;
+    },
+    sectionName() {
+      return `${this.section.name}`;
     }
   },
 
@@ -88,10 +105,22 @@ export default {
       this.itemComu= {
         ...item
       };
-    }
+    },
+    getGradeInfo() {
+      axios.get(`http://localhost:8080/api/v1/sections/${this.pageId}`)
+        .then(response => {
+          this.section = response.data;
+        })
+    },
+    backPage(){
+      this.$router.push({
+        name: "sections",
+      });
+    },
   },
 
   mounted(){
+    this.getGradeInfo();
   },
 
   created(){

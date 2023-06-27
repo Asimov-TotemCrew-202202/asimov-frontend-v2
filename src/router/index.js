@@ -90,6 +90,15 @@ const routes = [
       requiresAuth: true,
       layout: () => import('../layouts/DefaultLayaout.vue')
     }
+  },
+  {
+    path: '/sections/:id',
+    name: 'sections-detail',
+    component: () => import('../views/SectionsDetail.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: () => import('../layouts/DefaultLayaout.vue')
+    }
   }
 ]
 

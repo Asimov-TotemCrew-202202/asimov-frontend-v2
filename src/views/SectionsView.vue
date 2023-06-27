@@ -6,13 +6,12 @@
       <template #leftBottomHeader>
         <v-select
             style="display: inline-flex; width: 150px;"
-            height="36"
             :items="grades"
             item-text="name"
             item-value="id"
             v-model="gradeSelected"
             @change="reloadCrud"
-            dense small
+            dense
             dark color="white" 
             class="mr-3" 
             outlined 
@@ -70,6 +69,7 @@
 
 <script>
 import CrudCustom from '@/components/CrudCustom.vue'
+import router from '@/router';
 import axios from 'axios';
 
 
@@ -90,37 +90,30 @@ export default {
       name: '',
     },
     grades: [],
-    gradeSelected: {
-        id: 1,
-        name: ''
-    },
+    gradeSelected: 1,
   }),
 
   watch:{
+    
   },
 
   computed:{
     endPoint(){
-      return `grades/${this.gradeSelected.id}/sections`;
+      return `grades/${this.gradeSelected}/sections`;
     },
   },
 
   methods: {
     onDetalle(item){
-      this.dataComunicados = true;
-      this.itemComu= {
-        ...item
-      };
+      let id = item.id;
+      this.$router.push({
+        name: `sections-detail`,
+        params: { id },
+      });
     },
-    changeGradeSelected() {
-        const grade = this.grades.find(grade => grade.name === this.gradeSelected) 
-        this.gradeSelectedId = grade.id;
-
-        console.log(this.gradeSelectedId);
-    },
-    reloadCrud(item) {
-        console.log(item);
-        this.$refs.crud.getData();
+    async reloadCrud() {
+      await this.endPoint;
+      this.$refs.crud.getData();
     }
 
   },
@@ -129,7 +122,6 @@ export default {
     axios.get(`http://localhost:8080/api/v1/grades`)
         .then(response => {
             this.grades = response.data;
-            // this.gradeSelected = this.grades[0];
         })
   },
 
@@ -143,39 +135,5 @@ export default {
   background-color: white !important;
   border-color: white !important;
 }
-
-/* .myselect {
-    display: inline-flex;
-    height: 36px; 
-    border: 1px solid white; 
-    border-radius: 4px; 
-    width: 150px; 
-    margin-right: 12px; 
-    padding-left: 12px; 
-    color: white;
-}
-
-.myselect:focus {
-    outline: none;
-}
-
-.myselect:hover {
-    background-color: rgba(255, 255, 255, .1);
-}
-
-.myselect option {
-  background-color: white;
-  margin: 10px;
-  color: #333;
-}
-
-.myselect option:hover {
-  background-color: #e6e6e6;
-} */
-
-/* .myselect option:selected {
-  background-color: white;
-  color: #fff;
-} */
 
 </style>
