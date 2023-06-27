@@ -41,11 +41,6 @@
             </v-btn>
           </v-row>
         </v-alert>
-        <!-- <div v-if="dataComunicados" class="d-flex pl-3 mt-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-file-document</v-icon> <h2 class="py-3">Contenido</h2></div>
-        <v-card v-if="dataComunicados" outlined class="pa-3">
-          <v-card-title class="pa-0">{{itemComu.name }}</v-card-title>
-          {{itemComu.description }}
-        </v-card> -->
       </template>
     </crud-custom>
 </template>
@@ -84,10 +79,14 @@ export default {
 
   methods: {
     onDetalle(item){
-      this.dataComunicados = true;
-      this.itemComu= {
-        ...item
-      };
+      this.dataComunicados = false;
+      setTimeout(() => {
+        this.dataComunicados = true;
+        this.itemComu= {
+          ...item
+        };
+        
+      }, 200);
     }
   },
 

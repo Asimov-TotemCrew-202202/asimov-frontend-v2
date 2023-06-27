@@ -6,10 +6,6 @@
                     <v-icon size="30" color="#ffffff" class="mr-3">mdi-account</v-icon> 
                     <h2>Profile</h2>
                 </div>
-                <v-spacer></v-spacer>
-                <v-btn @click="openDialog" dark color="white" outlined elevation="0">
-                    <v-icon class="mr-2">mdi-pen</v-icon>EDITAR
-                </v-btn>
             </div>
 
             <div>

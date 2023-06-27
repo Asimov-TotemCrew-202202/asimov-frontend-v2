@@ -39,16 +39,22 @@
           </card-custom>
           <v-form v-if="!loadingCard">
             <v-select
-              :items="updateCourses"
+              :items="coursesList"
               outlined
+              item-value="id"
+              item-text="name"
               hide-details
+              v-model="entityModel.course_id"
               dense
               label="Cursos"
               class="mt-3"
             ></v-select>
             <v-select
-              :items="updateGrades"
+              :items="gradesList"
               outlined
+              item-value="id"
+              item-text="name"
+              v-model="entityModel.grade_id"
               hide-details
               dense
               label="Grados"
@@ -115,6 +121,12 @@ export default {
       { text: "Institución Educativa", value: "last_name" },
       { text: "Celular", value: "phone" },
     ],
+    entityModel: {
+      school_year: "",
+      teacher_id: '',
+      course_id: '',
+      grade_id: ''
+    },
     entityProperty:{
       username: '',
       email: '',
@@ -171,11 +183,20 @@ export default {
       }
     },
     async asignTeacher(){
+      const fechaActual = new Date();
       this.laodingAsign = true;
+      this.entityModel.school_year = fechaActual.getFullYear();
+      this.entityModel.teacher_id = this.itemTeacher.id;
       try {
-        // await this.$axios.post(`users/${item.userId}`);
+        await this.$axios.post(`principals/${this.currentUserData.id}/subjects`, this.entityModel);
         this.dialogAsign = false;
         this.laodingAsign = false;
+        this.entityModel= {
+          school_year: "",
+          teacher_id: '',
+          course_id: '',
+          grade_id: ''
+        };
       } catch (error) {
         console.log(error);
       }

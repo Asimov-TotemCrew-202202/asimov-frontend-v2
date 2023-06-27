@@ -32,7 +32,7 @@
                 :color="modelSize? 'red' : '#081d87'"
               >
                 <v-list-item
-                  v-for="(item, i) in items"
+                  v-for="(item, i) in filteredItems"
                   :key="i"
                   :disabled="i==model"
                   :style="i!=0?`border-top: 2px solid #eeeeee;`:''"
@@ -104,14 +104,14 @@
           route: 'profesores',
         },
         {
-          icon: 'mdi-account',
-          text: 'Profile',
-          route: 'profile',
-        },
-        {
           icon: 'mdi-book',
           text: 'Secciones',
           route: 'sections',
+        },
+        {
+          icon: 'mdi-account',
+          text: 'Profile',
+          route: 'profile',
         },
       ],
       model: 0,
@@ -128,7 +128,18 @@
       },
       currentUser() {
         return this.$store.state.auth.user;
-      }
+      },
+      currentUserDirector() {
+        let roleUser = this.$store.state.auth.user.roles;
+        return roleUser.includes('ROLE_PRINCIPAL');
+      },
+      filteredItems() {
+        if (this.currentUserDirector) {
+          return this.items;
+        } else {
+          return this.items.filter(item => item.route !== 'sections' && item.route !== 'profesores');
+        }
+      },
       
     },
     mounted() {
@@ -146,6 +157,9 @@
 
       this.model = index;
       
+      // if (!this.currentUserDirector) {
+      //   this.items.splice(this.items.length - 2, 2);
+      // }
     },
     methods:{
       onResize() {

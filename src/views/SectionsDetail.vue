@@ -1,35 +1,50 @@
 <template>
-    <crud-custom :title-crud="sectionName" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Competencia" icon="mdi-book" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
+    <crud-custom :title-crud="sectionName" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Alumno" icon="mdi-book" createEp="auth/signup" :entity-property="entityProperty" title-card="parentFullName" hide-edit :headers="header" >
       <template #form>
-        <v-text-field dense label="Titulo" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
-        <v-textarea rows="4" dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description"></v-textarea>
-      </template>
-      <template #leftBottomHeader>
-        <v-btn dark color="white" class="mr-3" @click="backPage" outlined elevation="0">
-            <v-icon class="mr-2">mdi-arrow-left</v-icon>REGRESAR
-          </v-btn>
+          <v-text-field @focus="setUser" dense required :rules="lastNameRules" label="Nombre y Apellidos" hide-details outlined class="mb-3" @blur="setNameEspeciality" v-model="entityProperty.first_name"></v-text-field>                    
+          <v-text-field dense required :rules="lastNameRules" label="Email" hide-details outlined class="mb-3" v-model="entityProperty.email" @blur="createUsername"></v-text-field>                    
+          <v-text-field dense label="Username" disabled hide-details outlined class="mb-3" v-model="entityProperty.username"></v-text-field>                    
+          <v-text-field dense label="Institucion Educativa" disabled hide-details outlined class="mb-3" v-model="currentUser.last_name"></v-text-field>                    
+          <v-text-field dense required :rules="lastNameRules" label="Celular" type="number" hide-details outlined class="mb-3" v-model="entityProperty.phone"></v-text-field>                    
+          <v-text-field dense required :rules="lastNameRules" label="Celular Apoderado" hide-details outlined class="mb-3" v-model="entityProperty.phoneParent"></v-text-field>                    
+          <v-text-field dense required :rules="lastNameRules" label="Password" :type="typeInput?'text':'password'" hide-details outlined class="mb-3" v-model="entityProperty.password">            <template v-slot:append>
+              <v-tooltip bottom >
+                <template v-slot:activator="{ on }">
+                  <v-icon @click="typeInput = !typeInput" v-on="on">mdi-{{typeInput?'key':'key-outline'}}</v-icon>
+                </template>
+                {{typeInput?'Ocultar ':'Ver '}}Contraseña
+              </v-tooltip>
+            </template>
+          </v-text-field>
       </template>
       <template #rightColumn>
         <div class="d-flex pl-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-information</v-icon> <h2 class="py-3">Información</h2></div>
         <v-card outlined class="pa-3">
-          Las competencias en un curso son habilidades y conocimientos esenciales que se adquieren para lograr un aprendizaje efectivo y alcanzar el éxito en el ámbito profesional.
+          Agrupa a tus alumnos en secciones. Estas divisiones te ayudaran a organizar y administrar de manera eficiente el proceso de enseñanza y aprendizaje.
         </v-card>
+        <v-skeleton-loader
+          v-if="loadingItem"
+          v-bind="attrs"
+          class="mt-3"
+          type="list-item-three-line, card-heading"
+        ></v-skeleton-loader>
         <v-alert
           :value="dataComunicados"
           color="blue-grey"
           dark
           border="top"
-          icon="mdi-message-alert-outline"
+          icon="mdi-account-school"
           transition="scale-transition"
           class="mt-3"
         >
-          <span class="font-weight-bold">{{itemComu.name }}</span>
+          <span class="font-weight-bold">{{itemComu.first_name }}</span>
           <v-divider
             class="my-4 info"
             style="opacity: 0.22"
           ></v-divider>
-
-          {{itemComu.description }}
+          Correo:   {{itemComu.email}} <br>
+          Celular:  {{itemComu.phone}} <br>
+          Username:  {{itemComu.username}}
           <v-divider
             class="my-4 info"
             style="opacity: 0.22"
@@ -46,11 +61,11 @@
             </v-btn>
           </v-row>
         </v-alert>
-        <!-- <div v-if="dataComunicados" class="d-flex pl-3 mt-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-file-document</v-icon> <h2 class="py-3">Contenido</h2></div>
-        <v-card v-if="dataComunicados" outlined class="pa-3">
-          <v-card-title class="pa-0">{{itemComu.name }}</v-card-title>
-          {{itemComu.description }}
-        </v-card> -->
+      </template>
+      <template #leftBottomHeader>
+        <v-btn dark color="white" class="mr-3" @click="backPage" outlined elevation="0">
+            <v-icon class="mr-2">mdi-arrow-left</v-icon>REGRESAR
+          </v-btn>
       </template>
     </crud-custom>
 </template>
@@ -69,13 +84,24 @@ export default {
 
   data: () => ({
     itemComu: {},
+    loadingItem: false,
+    loadingInit: false,
     dataComunicados: false,
     header: [
-      { text: "Descripción", value: "description" },
+      { text: "Numero de apoderado", value: "phoneParent" },
+      { text: "USER ID", value: "userId" },
     ],
     entityProperty:{
-      name: '',
-      description: '',
+      username: '',
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
+      role: [],
+      parentFullName: '',
+      phoneParent: '',
+      sectionId: ''
     },
     section: {
       id: 0,
@@ -88,8 +114,11 @@ export default {
   },
 
   computed:{
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
     endPoint(){
-      return `competences`;
+      return `students?sectionId=${this.pageId}`;
     },
     pageId() {
       return this.$route.params.id;
@@ -100,30 +129,57 @@ export default {
   },
 
   methods: {
-    onDetalle(item){
-      this.dataComunicados = true;
-      this.itemComu= {
-        ...item
-      };
+    async onDetalle(item){
+      this.dataComunicados = false;
+      this.loadingItem = true;
+      try {
+        const {data} = await this.$axios.get(`users/${item.userId}`);
+        // console.log('INFORMATION', item);
+        // console.log('INFORMATION', data);
+        this.loadingItem = false;
+        this.dataComunicados = true;
+        this.itemComu= {
+          ...data
+        };
+      } catch (error) {
+        console.log(error);
+      }
     },
-    getGradeInfo() {
-      axios.get(`http://localhost:8080/api/v1/sections/${this.pageId}`)
-        .then(response => {
-          this.section = response.data;
-        })
+    async getGradeInfo() {
+      this.loadingInit= true;
+      try {
+        const {data} = await this.$axios.get(`sections/${this.pageId}`);
+        this.section = data;
+        this.loadingInit= false;
+      } catch (error) {
+        
+      }
     },
     backPage(){
       this.$router.push({
         name: "sections",
       });
     },
+    setNameEspeciality(){
+      this.entityProperty.parentFullName = this.entityProperty.first_name;
+
+    },
+    createUsername() {
+      const username = this.entityProperty.email.substring(0, this.entityProperty.email.indexOf('@'));
+      this.entityProperty.username = username;
+    },
+    setUser(){
+      this.entityProperty.last_name = this.currentUser.last_name;
+      this.entityProperty.role = ["student"];
+      this.entityProperty.sectionId = this.pageId;      
+    }
   },
 
   mounted(){
-    this.getGradeInfo();
-  },
+    },
 
   created(){
+    this.getGradeInfo();
   }
 }
 </script>

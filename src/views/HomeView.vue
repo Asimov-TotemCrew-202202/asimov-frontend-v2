@@ -171,6 +171,9 @@
       lastFive(){
         return this.comunicados.slice(-4);
       },
+      currentUserData() {
+        return JSON.parse(localStorage.getItem('userData'));
+      },
       currentUserDirector() {
         let roleUser = this.$store.state.auth.user.roles;
         return roleUser.includes('ROLE_PRINCIPAL');
@@ -242,7 +245,7 @@
       async initData(){
         this.loading = true;
         try {
-          const {data} = await this.$axios.get(`principals/${this.currentUserData.id}/statements`);
+          const {data} = await this.$axios.get(`principals/${this.currentUserDirector? this.currentUserData.id :this.currentUserData.principalId}/statements`);
           this.comunicados = data;
           this.loading = false;
         } catch (error) {

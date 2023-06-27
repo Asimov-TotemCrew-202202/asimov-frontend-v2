@@ -1,5 +1,5 @@
 <template>
-  <div style="display: grid; grid-template-columns: 80% 20%; grid-template-rows: 1fr; gap: 10px;">
+  <div style="display: grid; grid-template-columns: 75% 25%; grid-template-rows: 1fr; gap: 10px;">
     <v-overlay :value="loading">
       <v-progress-circular
         indeterminate
@@ -10,7 +10,13 @@
   <div style="width: 100%;">
     <v-card color="#eeeeee" elevation="0">
       <v-card class="d-flex flex-row pa-5 rounded-lg mb-3 align-center white--text" elevation="0" style="background-color: #081d87;">
-        <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> <h2>{{titleCrud}}</h2>
+        <v-icon size="30" color="#ffffff" class="mr-3">{{icon}}</v-icon> 
+        <v-progress-circular
+            v-if="loading"
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+        <h2 v-else>{{titleCrud}}</h2>
         <v-spacer></v-spacer>
         <div style="display: flex; max-height: 36px; align-items: center;">
           <slot name="leftBottomHeader">
@@ -225,7 +231,7 @@ import CardCustom from '@/components/CardCustom.vue'
       addItem(){
         this.dialog = true;
         this.onEdit = false;
-        this.$emit('edit', false);
+        this.$emit('add');
 
         this.cleanProperty(this.entityProperty);        
       },

@@ -38,7 +38,7 @@
       </v-card>
       <div class="d-flex pl-3 mt-5 align-center"><v-icon size="30" color="#081d87" class="mr-3">mdi-tooltip-check</v-icon> <h2 class="py-3">Temas</h2> <v-spacer></v-spacer>
         <v-btn color="#081d87" class="mr-4 elevation-0" dark @click="openAdd"> <v-icon class="mr-2">mdi-plus</v-icon>AGREGAR</v-btn></div>
-        <div v-if="loadingView">
+        <div v-if="loadingTopic">
         <v-skeleton-loader
         v-for="(item, index) in 3" :key="index"
           type="list-item-three-line, actions"
@@ -70,7 +70,7 @@
             <v-spacer></v-spacer>
             <v-btn elevation="0" color="warning" class="" @click="openInfo(i)" :class="item.status!=true? 'mr-2':''"> <v-icon class="mr-3">mdi-eye</v-icon>VER INFO</v-btn>
             <v-btn elevation="0" v-if="item.status==true" color="purple" dark class="mr-2" :loading="loadingExamView" @click="openExam(item.id)"> <v-icon class="mr-3">mdi-file</v-icon>EVALUACIÓN</v-btn>
-            <div v-if="!currentUserDirector && item.status!=true" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i, item.id)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN IA</div>
+            <div v-if="!currentUserDirector && item.status!=true" elevation="0" class="bn5" :class="{ 'active-after': isActive }" @click="activeOverlay(i, item.id)"> <v-icon color="white" class="mr-3">mdi-assistant</v-icon>GENERAR EVALUACIÓN</div>
           </v-card-actions>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -143,6 +143,38 @@
         <chip-custom v-for="(item, index) in competences" :key="index" class="mr-3 mt-3" :text="item.name" @click="openCompetence(item.id)" />
 
       </v-card>
+      <v-alert
+          :value="dialogCompetence"
+          color="blue-grey"
+          dark
+          border="top"
+          icon="mdi-message-alert-outline"
+          transition="scale-transition"
+          class="mt-3"
+        >
+          <span class="font-weight-bold">{{competencia.name }}</span>
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+
+          {{competencia.description }}
+          <v-divider
+            class="my-4 info"
+            style="opacity: 0.22"
+          ></v-divider>
+          <v-row>
+            <v-spacer style="color: white"></v-spacer>
+            <v-btn
+              class="mr-3 my-2"
+              color="white"
+              outlined
+              @click="dialogCompetence= !dialogCompetence"
+            >
+              CERRAR
+            </v-btn>
+          </v-row>
+        </v-alert>
 
     
     </div>
@@ -226,6 +258,7 @@
           <v-btn
             color="red"
             text
+            :loading="loadingAddTopic"
             @click="cancelDialog"
           >
             CERRAR
@@ -233,6 +266,7 @@
           <v-btn
             color="#081d87"
             text
+            :loading="loadingAddTopic"
             @click="addTopic"
           >
             REGISTRAR
@@ -258,7 +292,7 @@
         <v-card-text class="mt-5">
           <v-card v-for="(item, index) in repuestas" :key="index" outlined class="pa-3 mb-2">
             <p class="mb-3 font-weight-bold">{{item.question}}</p>  
-            <p v-for="(option, i) in item.options" :key="i" class="my-0 font-weight-light" :class="item.correct_option_number == (i+1) ?'font-weight-bold':''"> {{letters[i]}} {{option}}</p>  
+            <p v-for="(option, i) in item.options" :key="i" class="my-0 font-weight-light" :class="item.correctOptionOrder == (i+1) ?'font-weight-bold':''"> {{letters[i]}} {{option}}</p>  
           </v-card>
           
         </v-card-text>
@@ -270,7 +304,7 @@
           <v-btn
             color="red"
             text
-            @click="evaDialog = false"
+            @click="closeExam"
           >
             CANCELAR
           </v-btn>
@@ -286,39 +320,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="dialogCompetence"
-      persistent
-      width="650"
-    >
-      <v-card>
-        <v-card-title class="" style="color: white; background-color: #081d87;">
-          COMPETENCIA {{ competencia.name }}
-        </v-card-title>
-        
-        
-        
-        
-        <v-card-text class="mt-5">
-          {{ competencia.description }}
-          
-        </v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="red"
-            text
-            @click="dialogCompetence = false"
-          >
-            CERRAR
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <v-snackbar
       v-model="snackbar"
       timeout="1500"
@@ -345,21 +346,21 @@
 <script>
 import ChipCustom from '@/components/ChipCustom.vue'
 import { Configuration, OpenAIApi } from "openai";
-// import CardCustom from '@/components/CardCustom.vue'
 
   export default {
     name: 'CoursesDetail',
 
     components:{
       ChipCustom,
-      // CardCustom,
     },
 
     data: () => ({
       textError: '',
       archivo: null,
+      loadingAddTopic: false,
       colorSnak: '',
       examLoading: false,
+      loadingTopic: false,
       loadingView: false,
       loadingExamView: false,
       showExam: false,
@@ -468,10 +469,12 @@ import { Configuration, OpenAIApi } from "openai";
         });
       },
       async addTopic(){
+        this.loadingAddTopic =true;
         try {
           await this.$axios.post(`courses/${this.pageId}/topics`,this.entityProperty);
-          this.initData();
+          this.initTopics();
           this.cancelDialog();
+          this.loadingAddTopic =false;
         } catch (error) {
           
         }
@@ -488,12 +491,18 @@ import { Configuration, OpenAIApi } from "openai";
           
         }
       },
+      closeExam(){
+        this.evaDialog = false;
+        this.entityExams= {
+          examDetailResources: []
+        };
+      },
       async addExam(){
         for (let index = 0; index < this.repuestas.length; index++) {
           this.entityExams.examDetailResources.push({
             question: this.repuestas[index].question,
             options: [ ...this.repuestas[index].options ],
-            correctOptionOrder: this.repuestas[index].correct_option_number,
+            correctOptionOrder: this.repuestas[index].correctOptionOrder,
           })
         }
         this.examLoading = true;
@@ -505,6 +514,9 @@ import { Configuration, OpenAIApi } from "openai";
           this.evaDialog = false; 
           this.showExam = false; 
           this.examLoading = false;
+          this.entityExams= {
+            examDetailResources: []
+          };
           this.completeTopic(this.selectIdTopic);
         } catch (error) {
           this.colorSnak='red';
@@ -519,31 +531,43 @@ import { Configuration, OpenAIApi } from "openai";
           await this.$axios.post(`topics/${id}/complete`);
           this.textError = 'TEMA COMPLETADO!';
           this.snackbar = true;
-          this.initData();
+          this.initTopics();
         } catch (error) {
           this.textError = error;
           this.snackbar = true;
         }
       },
       openCompetence(id){
-        console.log('BANDERA');
-        this.dialogCompetence = true;
-        let sampleData = this.competences.find(objeto => objeto.id === id);
-        this.competencia = sampleData;
-        console.log('BANDERA FIN');
+        this.dialogCompetence = false;
+        setTimeout(() => {
+          console.log('BANDERA');
+          this.dialogCompetence = true;
+          let sampleData = this.competences.find(objeto => objeto.id === id);
+          this.competencia = sampleData;
+          console.log('BANDERA FIN');          
+        }, 200);
+      },
+      async initTopics(){
+        this.loadingTopic = true;
+        try {
+          const topicsData = await this.$axios.get(`courses/${this.pageId}/topics`);
+          this.topics = topicsData.data;
+          console.log('TOPICS----->', this.topics);          
+          this.loadingTopic = false;
+        } catch (error) {
+          
+        }
+
       },
       async initData(){
         this.loadingView = true;
         try {
           const {data} = await this.$axios.get(`courses/${this.pageId}`);
           const coursesData = await this.$axios.get(`courses/${this.pageId}/competences`);
-          const topicsData = await this.$axios.get(`courses/${this.pageId}/topics`);
           this.entityProp = data;
           console.log('DATA----->', data);
           this.competences = coursesData.data;
           console.log('COMPETENCES----->', this.competences);
-          this.topics = topicsData.data;
-          console.log('TOPICS----->', this.topics);
           this.loadingView = false;
         } catch (error) {
           
@@ -563,10 +587,10 @@ import { Configuration, OpenAIApi } from "openai";
           // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
 
         
-        const promptAll = `Del tema propuesto genera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_number\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n] \n\n TEMA00\${this.id}:{${this.topics[i].file}}`;
+        const promptAll = `Del tema propuesto genera una evaluacion de 2 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato JSON con los atributos que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correctOptionOrder\": (VALOR ENTRE 1 y 3)\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n] \n\n TEMA00\${this.id}:{${this.topics[i].file}}`;
         const promptFinal = promptAll.toString();
 
-        const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correct_option_number\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
+        const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correctOptionOrder\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
         
         const response = await openai.createCompletion({
           model: "text-davinci-003",
@@ -606,7 +630,8 @@ import { Configuration, OpenAIApi } from "openai";
       }
     },
     async created(){
-      await this.initData();
+      this.initData();
+      this.initTopics();
     }
 
   }
@@ -614,6 +639,11 @@ import { Configuration, OpenAIApi } from "openai";
 
 <style lang="scss">
 $medium: 1500px;
+
+.v-application .info{
+  background-color: white !important;
+  border-color: white !important;
+}
 
 .card-course{
   transition: transform 0.3s ease;

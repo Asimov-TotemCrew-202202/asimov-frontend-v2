@@ -1,5 +1,5 @@
 <template>
-    <crud-custom title-crud="Comunicados" custom-put @detalle="onDetalle" max-title :end-point="endPoint" name-crud="Comunicado" icon="mdi-bullhorn-variant" :entity-property="entityProperty" title-card="title"  :headers="header" one-column>
+    <crud-custom title-crud="Comunicados" custom-put @detalle="onDetalle" :hide-edit="!currentUserDirector" :hide-delete="!currentUserDirector" max-title :end-point="endPoint" name-crud="Comunicado" icon="mdi-bullhorn-variant" :entity-property="entityProperty" title-card="title"  :headers="header" one-column>
       <template #form>
         <v-text-field dense label="Titulo" hide-details outlined class="mb-3" v-model="entityProperty.title"></v-text-field>
         <v-textarea rows="4" dense label="Descripcion" hide-details outlined class="mb-3" v-model="entityProperty.description"></v-textarea>
@@ -70,19 +70,26 @@ export default {
 
   computed:{
     endPoint(){
-      return `principals/${this.currentUserData.id}/statements`;
+      return `principals/${this.currentUserDirector? this.currentUserData.id :this.currentUserData.principalId }/statements`;
     },
     currentUserData() {
       return JSON.parse(localStorage.getItem('userData'));
+    },
+    currentUserDirector() {
+      let roleUser = this.$store.state.auth.user.roles;
+      return roleUser.includes('ROLE_PRINCIPAL');
     },
   },
 
   methods: {
     onDetalle(item){
-      this.dataComunicados = true;
-      this.itemComu= {
-        ...item
-      };
+      this.dataComunicados = false;
+      setTimeout(() => {
+        this.dataComunicados = true;
+        this.itemComu= {
+          ...item
+        };
+      }, 200);
     }
   },
 

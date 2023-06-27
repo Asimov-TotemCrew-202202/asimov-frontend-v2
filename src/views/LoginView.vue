@@ -128,21 +128,21 @@ import User from '@/models/user';
         if (!valid) {
           this.loadingPost = true;
           if (this.user.username && this.user.password) {
-            await this.$store.dispatch('auth/login', this.user).then(
-              () => {
-                this.$router.push('/home').catch(()=>{});
-              this.loadingPost = false;
-            },
-            error => {
-              this.loadingPost = false;
-              this.showError = true;
-              this.user.username = '';
-              this.user.password = '';
-
-              console.warn(error.response.status);
-            }
-          );
-        }
+              await this.$store.dispatch('auth/login', this.user).then(
+                () => {
+                  this.$router.push('/home').catch(()=>{});
+                this.loadingPost = false;
+              },
+              error => {
+                this.loadingPost = false;
+                this.showError = true;
+                this.user.username = '';
+                this.user.password = '';
+  
+                console.warn(error.response.status);
+              }
+            );
+          }
         }
       },
       register() {

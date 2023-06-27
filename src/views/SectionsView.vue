@@ -1,25 +1,18 @@
 <template>
-    <crud-custom title-crud="Secciones" ref="crud" max-title hide-delete @detalle="onDetalle" :end-point="endPoint" name-crud="Sección" icon="mdi-book" :entity-property="entityProperty" title-card="name"  :headers="header" one-column>
+    <crud-custom title-crud="Secciones" ref="crud" max-title hide-delete hide-edit @detalle="onDetalle" :end-point="endPoint" name-crud="Sección" icon="mdi-book" :entity-property="entityProperty" title-card="name"  :headers="header">
       <template #form>
-        <v-text-field dense label="Name" hide-details outlined class="mb-3" v-model="entityProperty.name"></v-text-field>
+        <v-alert
+          text
+          outlined
+          color="info"
+          icon="mdi-information"
+          class="text-justify"
+        >
+          Considera que al registrar una sección se antepondra el prefijo de 'SEC-'.<br>En otra palabras si usted registra en el siguiente campo los numeros de '123' o la letra 'A', la seccion se visualizara con el nombre de 'SEC-123' o 'SEC-A'
+        </v-alert>
+        <v-text-field dense label="Nombre Sección" hide-details outlined class="mb-3" v-model="entityProperty.name" @keydown="setKey" ></v-text-field>
       </template>
       <template #centralBottomHeader>
-        <!-- <v-select
-            style="display: inline-flex; width: 150px;"
-            :items="grades"
-            item-text="name"
-            item-value="id"
-            v-model="gradeSelected"
-            @change="reloadCrud"
-            dense
-            dark color="white" 
-            class="mr-3" 
-            outlined 
-            elevation="0"
-            :rules="[v => !!v || 'Item is required']"
-            hide-details
-            required
-        ></v-select> -->
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -82,19 +75,12 @@
             </v-btn>
           </v-row>
         </v-alert>
-        <!-- <div v-if="dataComunicados" class="d-flex pl-3 mt-3"><v-icon size="30" color="#081d87" class="mr-3">mdi-file-document</v-icon> <h2 class="py-3">Contenido</h2></div>
-        <v-card v-if="dataComunicados" outlined class="pa-3">
-          <v-card-title class="pa-0">{{itemComu.name }}</v-card-title>
-          {{itemComu.description }}
-        </v-card> -->
       </template>
     </crud-custom>
 </template>
 
 <script>
 import CrudCustom from '@/components/CrudCustom.vue'
-import router from '@/router';
-
 
 export default {
   name: 'ComunicadosCustom',
@@ -138,6 +124,11 @@ export default {
         name: `sections-detail`,
         params: { id },
       });
+    },
+    setKey(){
+      const partes = this.entityProperty.name.split("SEC-");
+      partes.join(""); 
+      this.entityProperty.name = "SEC-" + partes.join("");
     },
     reloadCrud() {
       this.$refs.crud.getData();
