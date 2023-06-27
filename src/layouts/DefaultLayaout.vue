@@ -108,6 +108,11 @@
           text: 'Profile',
           route: 'profile',
         },
+        {
+          icon: 'mdi-book',
+          text: 'Secciones',
+          route: 'sections',
+        },
       ],
       model: 0,
       modelSize: null,

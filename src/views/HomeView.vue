@@ -246,6 +246,7 @@
           this.comunicados = data;
           this.loading = false;
         } catch (error) {
+          this.loading = false;
           // this.loading = false;
         }
       },
