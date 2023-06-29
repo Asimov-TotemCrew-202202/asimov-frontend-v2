@@ -345,7 +345,7 @@
 
 <script>
 import ChipCustom from '@/components/ChipCustom.vue'
-import { Configuration, OpenAIApi } from "openai";
+// import { Configuration, OpenAIApi } from "openai";
 
   export default {
     name: 'CoursesDetail',
@@ -579,11 +579,11 @@ import { Configuration, OpenAIApi } from "openai";
         this.selectIdTopic = sampleId;
 
         // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
-        const configuration = new Configuration({
-            organization: "org-",
-            apiKey: 'sk-',
-        });
-        const openai = new OpenAIApi(configuration);
+        // const configuration = new Configuration({
+        //     organization: "org-",
+        //     apiKey: 'sk-',
+        // });
+        // const openai = new OpenAIApi(configuration);
           // -----------------------------------------COLOCAR KEYS AQUI-----------------------------------------
 
         
@@ -592,14 +592,15 @@ import { Configuration, OpenAIApi } from "openai";
 
         const promptAlter = "Eres un profesor de una institucion educativa, analiza el siguiente TEMA00${this.id}, porque necesitare que lo consideres para una futura pregunta.  \n        TEMA00${this.id}:{Origen de la Geografía\nLa geografía tiene un largo pasado y una breve historia. Los griegos fueron los primeros en bosquejar y utilizarla como una herramienta para conocer los lugares mediante la descripción física de la superficie de la tierra.\n\nPrincipios Geográficos\nLocalización (extensión)\n\nFriedrich Ratzel\nConsiste en ubicar el lugar exacto de un hecho o fenómeno geográfico tomando en cuenta algunos aspectos espaciales como latitud, longitud, altitud, límites, superficie, etc.\n\nDescripción (generalización)\nPaul Vidal de la Blache\n\nConsiste en dar a conocer las características de un hecho o fenómeno geográfico que se proponga a estudiar.\n\nCausalidad (explicación)\nAlexander Von Humboldt\n\nPermite identificar el porqué de la ocurrencia de un hecho o fenómeno geográfico. Otorga carácter científico a la geografía.\n\nComparación (analogía)\nKarl Ritter y Vidal de la Blache\n\nConsiste en establecer semejanzas y diferencias entre el hecho o fenómeno geográfico que se está estudiando.\n\nEvolución (actividad)\nJean Brunhes\n\nSeñala que todo se encuentra en constante transformación, teniendo como agentes transformadores al hombre o a la naturaleza.}\n\nGenera una evaluacion de 3 preguntas con 3 alternativas de respuesta unica.\nDame las preguntas y alternativas en formato json en la sintaxis que propongo, ademas considera aregar una propiedad que mencione la alternativa correcta.\n\n[\n  {\n    \"question\": \"¿CONTENIDO DE PREGUNTA?\",\n    \"options\": [\n      \"CONTENIDO ALTERNATIVA 1\",\n      \"CONTENIDO ALTERNATIVA 2\",\n      \"CONTENIDO ALTERNATIVA 3\"\n    ],\n    \"correctOptionOrder\": 1\n  },\n  {...},\n  {...},\n  {...},\n  {...},\n]";
         
-        const response = await openai.createCompletion({
+        const response = await this.$openai.createCompletion({
           model: "text-davinci-003",
           prompt: promptFinal,
-          max_tokens: 256,
-          temperature: 0,
+          max_tokens: 500,
+          temperature: 0.5,
         });
 
         console.log('RESPONSE--->',response );
+
         try {
           this.repuestas = JSON.parse(response.data.choices[0].text.trim());
           this.evaDialog = true;          

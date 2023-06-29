@@ -5,15 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import "./plugins/apexcharts";
 import axios from 'axios';
-
-Vue.prototype.$axiosAuth = axios.create({
-  baseURL:  "http://localhost:8085/api/auth",
-  timeout: 30000,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json"
-  }
-});
+import { Configuration, OpenAIApi } from "openai";
 
 Vue.prototype.$axios = axios.create({
   baseURL:  "http://localhost:8080/api/v1/",
@@ -24,13 +16,16 @@ Vue.prototype.$axios = axios.create({
   }
 });
 
-Vue.prototype.$axiosGPT = axios.create({
-  baseURL:  "https://api.openai.com/v1",
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer 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'
-  }
+const apiKey = process.env.VUE_APP_OPENAI_API_KEY;
+
+const configuration = new Configuration({
+  organization: "org-gUhDidDoVgyVBKgfSp6l1Js3",
+  apiKey,
 });
+
+const openai = new OpenAIApi(configuration);
+
+Vue.prototype.$openai = openai;
 
 Vue.config.productionTip = false
 
