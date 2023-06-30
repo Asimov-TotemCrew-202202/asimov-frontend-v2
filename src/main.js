@@ -8,7 +8,7 @@ import axios from 'axios';
 import { Configuration, OpenAIApi } from "openai";
 
 Vue.prototype.$axios = axios.create({
-  baseURL:  "http://localhost:8080/api/v1/",
+  baseURL:  "http://52.15.199.102:8080/api/v1/",
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
