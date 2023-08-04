@@ -16,5 +16,6 @@ This repository contains the frontend for the asimov project
 ## Documentation
 * version 1.0.0 22/05/2023
 * version 2.5.0 29/06/2023
+* version 2.5.1 04/08/2023
 
 See [Frontend deployed](https://asimov-v2.web.app/).
